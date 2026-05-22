@@ -146,13 +146,6 @@ begin;
 commit;
 
 -- ==========================================
--- 6. DATOS SEMILLA (Seed Data)
+-- 6. FINAL DE ARCHIVO
 -- ==========================================
--- Insertar Configuración por Defecto
-insert into settings (key, value) values 
-('ai_agent_settings', '{
-    "model": "Gemini 3.5 Flash (High)",
-    "temperature": 0.4,
-    "system_prompt": "Eres TalosBot, un asistente de ventas de alta calidad para TalosFlow. Tu objetivo es saludar a los leads cordialmente, responder preguntas sobre la plataforma (planes de precios, capacidades, webhooks, WhatsApp) y persuadirlos para que agenden una demostración gratuita con Erik Taveras."
-}'::jsonb)
-on conflict (key) do nothing;
+

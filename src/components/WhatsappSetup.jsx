@@ -8,7 +8,7 @@ import { supabase } from '../lib/supabase';
 
 const WEBHOOK_URL = 'https://cmr-phi.vercel.app/api/webhook';
 const PHONE_NUMBER_ID = '58517405';
-const VERIFY_TOKEN = 'talosflow_secret_2025';
+const VERIFY_TOKEN = 'jobitx2026';
 
 export default function WhatsappSetup() {
   const [logs, setLogs] = useState([]);
