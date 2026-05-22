@@ -16,8 +16,8 @@ create table if not exists contacts (
     avatar text,
     blocked boolean default false,
     lead_score text default 'cold' check (lead_score in ('hot', 'warm', 'cold')),
-    ad_source text default 'Orgánico',
-    assigned_to text default 'Erik Taveras',
+    ad_source text,
+    assigned_to text,
     bot_enabled boolean default true,
     tags text[] default '{}'::text[],
     created_at timestamptz default now()
@@ -52,7 +52,7 @@ create table if not exists leads (
     reason text,
     notified boolean default false,
     stage text default 'Nuevo' check (stage in ('Nuevo', 'Contactado', 'Demo Programada', 'Propuesta', 'Cerrado')),
-    value text default '$0/mes',
+    value text,
     created_at timestamptz default now()
 );
 
