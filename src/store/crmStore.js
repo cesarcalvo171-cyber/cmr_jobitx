@@ -298,28 +298,29 @@ export const useCRMStore = create((set, get) => ({
   // Crear Cliente
   addClient: async (clientData) => {
     try {
-      // 1. Insertar contacto
+      // 1. Insertar contacto con todos los campos disponibles
       const { data: contact, error: contactError } = await supabase
         .from('contacts')
         .insert({
           name: clientData.name,
           phone: clientData.phone,
-          lead_score: clientData.status === 'Cerrado - Ganado' ? 'hot' : clientData.status === 'Demo Programada' ? 'warm' : 'cold',
-          tags: clientData.labels
+          email: clientData.email || null,
+          notes: clientData.notes || null,
+          lead_score: clientData.status === 'Cerrado - Ganado' ? 'hot'
+            : clientData.status === 'Demo Programada' ? 'warm' : 'cold',
+          tags: clientData.labels || []
         })
         .select()
         .single();
 
       if (contactError) throw contactError;
 
-      // 2. Crear conversación automática
+      // 2. Crear conversación automática para el nuevo contacto
       await supabase
         .from('conversations')
-        .insert({
-          contact_id: contact.id
-        });
+        .insert({ contact_id: contact.id });
 
-      // Recargar base
+      // Recargar datos
       await get().fetchChats();
       await get().fetchClients();
     } catch (err) {

@@ -1,40 +1,35 @@
 // api/webhook.js
-// Vercel Serverless Function - Webhook de WhatsApp e Inteligencia Artificial (OpenRouter)
+// Vercel Serverless Function — Webhook de WhatsApp + IA (OpenRouter/DeepSeek)
 
 import { createClient } from '@supabase/supabase-js';
 
-// Inicializar cliente administrativo de Supabase (Bypass RLS)
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+// Cliente Supabase con service_role (bypass RLS) para el backend
+const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export default async function handler(req, res) {
-  // ==========================================
-  // FASE 8: VALIDACIÓN Y SEGURIDAD
-  // ==========================================
 
-  // --- 1. GET: VERIFICACIÓN DEL WEBHOOK DE META ---
+  // ─── GET: Verificación del Webhook de Meta ──────────────────────────────────
   if (req.method === 'GET') {
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
-
-    const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN || 'talosflow_secret_token';
+    const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN || 'talosflow_secret_2025';
 
     if (mode === 'subscribe' && token === verifyToken) {
       console.log('✅ Webhook de Meta verificado con éxito.');
       return res.status(200).send(challenge);
-    } else {
-      console.error('❌ Error de validación de verify_token de WhatsApp.');
-      return res.status(403).json({ error: 'Token de verificación inválido' });
     }
+    console.error('❌ Token de verificación inválido.');
+    return res.status(403).json({ error: 'Token de verificación inválido' });
   }
 
-  // --- 2. POST: RECEPCIÓN DE MENSAJES ---
+  // ─── POST: Recepción de mensajes entrantes ───────────────────────────────────
   if (req.method === 'POST') {
     const body = req.body;
 
-    // Registrar logs de auditoría para seguridad
+    // Registrar log de auditoría
     try {
       await supabase.from('automation_logs').insert({
         type: 'webhook_received',
@@ -42,12 +37,12 @@ export default async function handler(req, res) {
         status: 'received'
       });
     } catch (err) {
-      console.error('Error guardando logs de webhook:', err);
+      console.error('Error guardando log de webhook:', err);
     }
 
-    // Verificar estructura del webhook de WhatsApp
+    // Validar estructura del payload de WhatsApp
     if (!body.object || body.object !== 'whatsapp_business_account') {
-      return res.status(400).json({ error: 'Payload de webhook no soportado' });
+      return res.status(400).json({ error: 'Payload no soportado' });
     }
 
     try {
@@ -57,24 +52,18 @@ export default async function handler(req, res) {
       const message = value?.messages?.[0];
       const contact = value?.contacts?.[0];
 
-      // Si no es un evento de mensaje entrante (ej. estado de entregado/leído), responder 200
+      // Manejar receipts de estado (delivered, read)
       if (!message || !contact) {
-        // Manejar receipts (entregado/leído)
         const statusUpdate = value?.statuses?.[0];
         if (statusUpdate) {
-          const msgId = statusUpdate.id;
-          const status = statusUpdate.status; // 'delivered', 'read', etc.
-
-          // Actualizar estado en Supabase
           await supabase
             .from('messages')
-            .update({ status })
-            .eq('whatsapp_message_id', msgId);
+            .update({ status: statusUpdate.status })
+            .eq('whatsapp_message_id', statusUpdate.id);
         }
-        return res.status(200).json({ success: true, message: 'Evento de estado procesado' });
+        return res.status(200).json({ success: true, message: 'Estado procesado' });
       }
 
-      // Extraer datos del mensaje
       const fromPhone = message.from;
       const contactName = contact.profile?.name || 'Cliente WhatsApp';
       const textContent = message.text?.body || '';
@@ -84,11 +73,7 @@ export default async function handler(req, res) {
         return res.status(200).json({ success: true, message: 'Mensaje sin texto omitido' });
       }
 
-      // ==========================================
-      // FASE 3: PERSISTENCIA Y FLUJO SUPABASE
-      // ==========================================
-
-      // A. Buscar o Crear Contacto
+      // ─── A. Buscar o crear contacto ──────────────────────────────────────────
       let { data: dbContact, error: contactError } = await supabase
         .from('contacts')
         .select('*')
@@ -100,25 +85,18 @@ export default async function handler(req, res) {
       if (!dbContact) {
         const { data: newContact, error: cErr } = await supabase
           .from('contacts')
-          .insert({
-            name: contactName,
-            phone: fromPhone,
-            lead_score: 'cold',
-            bot_enabled: true
-          })
+          .insert({ name: contactName, phone: fromPhone, lead_score: 'cold', bot_enabled: true })
           .select()
           .single();
-
         if (cErr) throw cErr;
         dbContact = newContact;
       }
 
-      // Si el contacto está bloqueado en el CRM, ignorar mensaje
       if (dbContact.blocked) {
         return res.status(200).json({ success: true, message: 'Contacto bloqueado' });
       }
 
-      // B. Buscar o Crear Conversación Activa
+      // ─── B. Buscar o crear conversación activa ───────────────────────────────
       let { data: dbConv, error: convError } = await supabase
         .from('conversations')
         .select('*')
@@ -131,19 +109,14 @@ export default async function handler(req, res) {
       if (!dbConv) {
         const { data: newConv, error: cvErr } = await supabase
           .from('conversations')
-          .insert({
-            contact_id: dbContact.id,
-            status: 'active',
-            unread_count: 1
-          })
+          .insert({ contact_id: dbContact.id, status: 'active', unread_count: 1 })
           .select()
           .single();
-
         if (cvErr) throw cvErr;
         dbConv = newConv;
       }
 
-      // Evitar duplicados de webhooks repetidos por Meta
+      // Evitar duplicados de webhook repetidos por Meta
       const { data: existingMsg } = await supabase
         .from('messages')
         .select('id')
@@ -151,10 +124,10 @@ export default async function handler(req, res) {
         .maybeSingle();
 
       if (existingMsg) {
-        return res.status(200).json({ success: true, message: 'Mensaje duplicado ya procesado' });
+        return res.status(200).json({ success: true, message: 'Duplicado ya procesado' });
       }
 
-      // C. Registrar Mensaje del Usuario
+      // ─── C. Registrar mensaje del usuario ────────────────────────────────────
       const { error: msgInsertError } = await supabase
         .from('messages')
         .insert({
@@ -167,40 +140,35 @@ export default async function handler(req, res) {
 
       if (msgInsertError) throw msgInsertError;
 
-      // ==========================================
-      // FASE 5: AGENTE IA (OPENROUTER / DEEPSEEK)
-      // ==========================================
+      // ─── D. Agente IA (solo si bot_enabled) ──────────────────────────────────
       if (dbContact.bot_enabled) {
-        // 1. Obtener historial reciente para memoria de conversación (últimos 8 mensajes)
+        // 1. Historial reciente (memoria de conversación)
         const { data: history } = await supabase
           .from('messages')
           .select('role, content')
           .eq('conversation_id', dbConv.id)
           .order('created_at', { ascending: true })
-          .limit(8);
+          .limit(10);
 
-        // 2. Obtener Prompt del Sistema desde configuraciones
-        let systemPrompt = "Eres TalosBot, un asistente de ventas de TalosFlow. Responde de forma muy corta, natural, en español, y persuasiva para agendar una demo.";
+        // 2. Obtener system prompt desde Supabase settings
+        let systemPrompt = 'Eres TalosBot, asistente de ventas de TalosFlow. Responde de forma corta, natural y en español para agendar una demo.';
+        let aiTemperature = 0.4;
+
         const { data: settingsData } = await supabase
           .from('settings')
           .select('value')
           .eq('key', 'ai_agent_settings')
           .maybeSingle();
 
-        if (settingsData?.value?.system_prompt) {
-          systemPrompt = settingsData.value.system_prompt;
+        if (settingsData?.value?.system_prompt) systemPrompt = settingsData.value.system_prompt;
+        if (settingsData?.value?.temperature !== undefined) aiTemperature = settingsData.value.temperature;
+
+        // Si el agente está desactivado desde la UI, saltar respuesta IA
+        if (settingsData?.value?.active === false) {
+          return res.status(200).json({ success: true });
         }
 
-        // 3. Mapear mensajes al formato estándar de OpenRouter
-        const openRouterMessages = [
-          { role: 'system', content: systemPrompt },
-          ...history.map(m => ({
-            role: m.role === 'user' ? 'user' : 'assistant',
-            content: m.content
-          }))
-        ];
-
-        // 4. Llamada a OpenRouter API (DeepSeek V3)
+        // 3. Llamada a OpenRouter
         const openRouterApiKey = process.env.OPENROUTER_API_KEY || '';
         let botResponseText = '';
 
@@ -210,34 +178,39 @@ export default async function handler(req, res) {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${openRouterApiKey}`,
-              'HTTP-Referer': 'https://talosflow.crm',
+              'HTTP-Referer': 'https://cmr-phi.vercel.app',
               'X-Title': 'TalosFlow CRM'
             },
             body: JSON.stringify({
-              model: 'deepseek/deepseek-chat',
-              messages: openRouterMessages,
-              temperature: settingsData?.value?.temperature || 0.4
+              model: settingsData?.value?.model || 'deepseek/deepseek-chat',
+              messages: [
+                { role: 'system', content: systemPrompt },
+                ...(history || []).map(m => ({
+                  role: m.role === 'user' ? 'user' : 'assistant',
+                  content: m.content
+                }))
+              ],
+              temperature: aiTemperature,
+              max_tokens: settingsData?.value?.max_tokens || 500
             })
           });
 
           const orJson = await orResponse.json();
           botResponseText = orJson.choices?.[0]?.message?.content || '';
         } catch (err) {
-          console.error('Error llamando a OpenRouter:', err);
-          // Fallback en caso de corte de API
-          botResponseText = `Hola ${contactName}, he recibido tu consulta. Erik Taveras se pondrá en contacto contigo en breve para darte soporte personalizado.`;
+          console.error('Error con OpenRouter:', err);
+          botResponseText = `Hola ${contactName}, he recibido tu mensaje. Erik Taveras te contactará pronto para brindarte soporte personalizado.`;
         }
 
         if (botResponseText) {
-          // 5. Enviar mensaje de vuelta a WhatsApp mediante Meta API
+          // 4. Enviar respuesta por WhatsApp Cloud API
           const waToken = process.env.WHATSAPP_ACCESS_TOKEN || '';
           const waPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID || '';
-
-          let waSentMsgId = `simulated_${Date.now()}`;
+          let waSentMsgId = `bot_${Date.now()}`;
 
           if (waToken && waPhoneId) {
             try {
-              const metaResponse = await fetch(`https://graph.facebook.com/v19.0/${waPhoneId}/messages`, {
+              const metaRes = await fetch(`https://graph.facebook.com/v19.0/${waPhoneId}/messages`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -250,16 +223,14 @@ export default async function handler(req, res) {
                   text: { body: botResponseText }
                 })
               });
-              const metaJson = await metaResponse.json();
-              if (metaJson.messages?.[0]?.id) {
-                waSentMsgId = metaJson.messages[0].id;
-              }
+              const metaJson = await metaRes.json();
+              if (metaJson.messages?.[0]?.id) waSentMsgId = metaJson.messages[0].id;
             } catch (err) {
               console.error('Error enviando mensaje por Meta API:', err);
             }
           }
 
-          // 6. Persistir respuesta de IA en Supabase
+          // 5. Persistir respuesta IA en Supabase
           await supabase.from('messages').insert({
             conversation_id: dbConv.id,
             role: 'assistant',
@@ -268,42 +239,32 @@ export default async function handler(req, res) {
             status: 'sent'
           });
 
-          // ==========================================
-          // FASE 6 & 7: LEAD SCORING Y EMAIL ALERTS
-          // ==========================================
-          
-          // Evaluar intenciones y contar número de mensajes
-          const msgCount = history.length + 2; // + mensaje entrante y saliente
-          
+          // ─── E. Lead Scoring Automático ─────────────────────────────────────
+          const msgCount = (history?.length || 0) + 2;
           if (msgCount >= 3) {
             let score = 'cold';
             let reason = 'Análisis automático de conversación.';
-            
-            const lowerBotMsg = botResponseText.toLowerCase();
-            const lowerUserMsg = textContent.toLowerCase();
+            const lowerUser = textContent.toLowerCase();
 
-            // Calificar como HOT si hay intención firme de demo o compra
             if (
-              lowerUserMsg.includes('demo') || 
-              lowerUserMsg.includes('reunion') || 
-              lowerUserMsg.includes('calendly') || 
-              lowerUserMsg.includes('comprar') ||
-              lowerUserMsg.includes('precio')
+              lowerUser.includes('demo') ||
+              lowerUser.includes('reunion') ||
+              lowerUser.includes('precio') ||
+              lowerUser.includes('comprar') ||
+              lowerUser.includes('contratar') ||
+              lowerUser.includes('calendly')
             ) {
               score = 'hot';
               reason = 'Cliente solicitó precios, demo o agendamiento.';
-            } else if (lowerUserMsg.length > 20) {
+            } else if (lowerUser.length > 20) {
               score = 'warm';
-              reason = 'Lead interactuando activamente con detalles.';
+              reason = 'Lead interactuando activamente.';
             }
 
-            // A. Guardar lead score automáticamente en contactos
-            await supabase
-              .from('contacts')
-              .update({ lead_score: score })
-              .eq('id', dbContact.id);
+            // Actualizar lead_score en contacts
+            await supabase.from('contacts').update({ lead_score: score }).eq('id', dbContact.id);
 
-            // B. Si es HOT, persistir en la tabla leads y notificar vía Resend Email
+            // Si es HOT → registrar en leads y enviar email de alerta
             if (score === 'hot') {
               const { data: existingLead } = await supabase
                 .from('leads')
@@ -312,20 +273,18 @@ export default async function handler(req, res) {
                 .maybeSingle();
 
               if (!existingLead) {
-                // Registrar lead en embudo
                 await supabase.from('leads').insert({
                   contact_id: dbContact.id,
                   score: 'hot',
-                  reason: reason,
+                  reason,
                   stage: 'Demo Programada',
                   value: '$120/mes'
                 });
 
-                // Enviar email vía Resend API
+                // Alerta por email (Resend)
                 const resendKey = process.env.RESEND_API_KEY || '';
-                const adminEmail = process.env.ADMIN_EMAIL || 'admin@crm.local';
-
-                if (resendKey) {
+                const adminEmail = process.env.ADMIN_EMAIL || '';
+                if (resendKey && adminEmail) {
                   try {
                     await fetch('https://api.resend.com/emails', {
                       method: 'POST',
@@ -338,19 +297,19 @@ export default async function handler(req, res) {
                         to: adminEmail,
                         subject: `🔥 ¡Nuevo Lead Caliente: ${contactName}!`,
                         html: `
-                          <h3>¡Alerta de Venta en TalosFlow!</h3>
-                          <p>El Agente IA ha calificado a <strong>${contactName}</strong> como un prospecto <strong>HOT</strong>.</p>
+                          <h3>🔥 ¡Alerta de Lead Caliente — TalosFlow CRM!</h3>
+                          <p>El Agente IA calificó a <strong>${contactName}</strong> como prospecto <strong>HOT</strong>.</p>
                           <ul>
                             <li><strong>Teléfono:</strong> ${fromPhone}</li>
                             <li><strong>Fase:</strong> Demo Programada</li>
-                            <li><strong>Razón de Calificación:</strong> ${reason}</li>
+                            <li><strong>Razón:</strong> ${reason}</li>
                           </ul>
-                          <p>Ingresa al CRM de inmediato para continuar el cierre.</p>
+                          <p>Ingresa al CRM para continuar el cierre: <a href="https://cmr-phi.vercel.app">cmr-phi.vercel.app</a></p>
                         `
                       })
                     });
                   } catch (mailErr) {
-                    console.error('Error enviando alerta por Resend:', mailErr);
+                    console.error('Error enviando alerta Resend:', mailErr);
                   }
                 }
               }
@@ -360,25 +319,21 @@ export default async function handler(req, res) {
       }
 
       return res.status(200).json({ success: true });
+
     } catch (error) {
       console.error('🚨 Error crítico en Webhook:', error);
-      
-      // Guardar log de falla
       try {
         await supabase.from('automation_logs').insert({
           type: 'webhook_failed',
-          payload: { error: error.message, body },
-          status: 'failed'
+          payload: { error: error.message },
+          status: 'failed',
+          error_message: error.message
         });
-      } catch (logErr) {
-        console.error('Error guardando logs de falla:', logErr);
-      }
-
-      return res.status(500).json({ error: 'Error interno en el servidor' });
+      } catch (_) {}
+      return res.status(500).json({ error: 'Error interno del servidor' });
     }
   }
 
-  // Métodos no permitidos
   res.setHeader('Allow', ['GET', 'POST']);
   return res.status(405).end(`Método ${req.method} no permitido`);
 }
