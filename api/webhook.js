@@ -3,17 +3,22 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// Cliente Supabase con service_role (bypass RLS) para el backend
-const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+// Inicialización lazy: solo se crea cuando se necesita (en el POST handler)
+// Esto evita que el módulo crashee si las env vars no están en Vercel todavía.
+function getSupabase() {
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  if (!url || !key) throw new Error('Supabase env vars not set: SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY');
+  return createClient(url, key);
+}
 
 export default async function handler(req, res) {
 
   // ─── GET: Verificación del Webhook de Meta ──────────────────────────────────
+  // Este bloque NO usa Supabase — solo compara el token y devuelve el challenge.
   if (req.method === 'GET') {
-    const mode = req.query['hub.mode'];
-    const token = req.query['hub.verify_token'];
+    const mode      = req.query['hub.mode'];
+    const token     = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
     const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN || 'jobitx2026';
 
@@ -21,13 +26,20 @@ export default async function handler(req, res) {
       console.log('✅ Webhook de Meta verificado con éxito.');
       return res.status(200).send(challenge);
     }
-    console.error('❌ Token de verificación inválido.');
+    console.error('❌ Token de verificación inválido. Recibido:', token, '| Esperado:', verifyToken);
     return res.status(403).json({ error: 'Token de verificación inválido' });
   }
 
   // ─── POST: Recepción de mensajes entrantes ───────────────────────────────────
   if (req.method === 'POST') {
     const body = req.body;
+    let supabase;
+    try {
+      supabase = getSupabase();
+    } catch (e) {
+      console.error('Supabase no configurado:', e.message);
+      return res.status(500).json({ error: e.message });
+    }
 
     // Registrar log de auditoría
     try {
@@ -46,9 +58,9 @@ export default async function handler(req, res) {
     }
 
     try {
-      const entry = body.entry?.[0];
-      const change = entry?.changes?.[0];
-      const value = change?.value;
+      const entry   = body.entry?.[0];
+      const change  = entry?.changes?.[0];
+      const value   = change?.value;
       const message = value?.messages?.[0];
       const contact = value?.contacts?.[0];
 
@@ -64,10 +76,10 @@ export default async function handler(req, res) {
         return res.status(200).json({ success: true, message: 'Estado procesado' });
       }
 
-      const fromPhone = message.from;
+      const fromPhone   = message.from;
       const contactName = contact.profile?.name || 'Cliente WhatsApp';
       const textContent = message.text?.body || '';
-      const waMsgId = message.id;
+      const waMsgId     = message.id;
 
       if (!textContent.trim()) {
         return res.status(200).json({ success: true, message: 'Mensaje sin texto omitido' });
@@ -204,7 +216,7 @@ export default async function handler(req, res) {
 
         if (botResponseText) {
           // 4. Enviar respuesta por WhatsApp Cloud API
-          const waToken = process.env.WHATSAPP_ACCESS_TOKEN || '';
+          const waToken   = process.env.WHATSAPP_ACCESS_TOKEN || '';
           const waPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID || '';
           let waSentMsgId = `bot_${Date.now()}`;
 
@@ -242,7 +254,7 @@ export default async function handler(req, res) {
           // ─── E. Lead Scoring Automático ─────────────────────────────────────
           const msgCount = (history?.length || 0) + 2;
           if (msgCount >= 3) {
-            let score = 'cold';
+            let score  = 'cold';
             let reason = 'Análisis automático de conversación.';
             const lowerUser = textContent.toLowerCase();
 
@@ -254,10 +266,10 @@ export default async function handler(req, res) {
               lowerUser.includes('contratar') ||
               lowerUser.includes('calendly')
             ) {
-              score = 'hot';
+              score  = 'hot';
               reason = 'Cliente solicitó precios, demo o agendamiento.';
             } else if (lowerUser.length > 20) {
-              score = 'warm';
+              score  = 'warm';
               reason = 'Lead interactuando activamente.';
             }
 
@@ -282,7 +294,7 @@ export default async function handler(req, res) {
                 });
 
                 // Alerta por email (Resend)
-                const resendKey = process.env.RESEND_API_KEY || '';
+                const resendKey  = process.env.RESEND_API_KEY || '';
                 const adminEmail = process.env.ADMIN_EMAIL || '';
                 if (resendKey && adminEmail) {
                   try {
@@ -326,8 +338,7 @@ export default async function handler(req, res) {
         await supabase.from('automation_logs').insert({
           type: 'webhook_failed',
           payload: { error: error.message },
-          status: 'failed',
-          error_message: error.message
+          status: 'failed'
         });
       } catch (_) {}
       return res.status(500).json({ error: 'Error interno del servidor' });
