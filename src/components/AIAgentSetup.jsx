@@ -113,7 +113,7 @@ export default function AIAgentSetup() {
             onClick={() => setIsActive(!isActive)}
             disabled={loading}
             className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-40 ${
-              isActive ? 'bg-emerald-600' : 'bg-slate-200'
+              isActive ? 'bg-green-500' : 'bg-slate-200'
             }`}
           >
             <span
@@ -122,7 +122,7 @@ export default function AIAgentSetup() {
               }`}
             />
           </button>
-          <span className={`text-[10px] font-bold ${isActive ? 'text-emerald-600' : 'text-slate-400'}`}>
+          <span className={`text-[10px] font-bold ${isActive ? 'text-green-600' : 'text-slate-400'}`}>
             {isActive ? 'ACTIVO' : 'INACTIVO'}
           </span>
         </div>
@@ -205,7 +205,7 @@ export default function AIAgentSetup() {
           <div className="border-t border-slate-50 pt-5 mt-4 flex items-center justify-between">
             {/* Feedback de guardado */}
             {saveStatus === 'success' && (
-              <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-600">
+              <span className="flex items-center gap-1.5 text-xs font-bold text-green-600">
                 <CheckCheck className="h-4 w-4" />
                 ¡Guardado en Supabase exitosamente!
               </span>
@@ -279,7 +279,7 @@ export default function AIAgentSetup() {
 
                 <span className={`text-[9px] font-bold flex items-center gap-0.5 shrink-0 px-2 py-0.5 rounded-full ml-2 ${
                   doc.status === 'Indexado'
-                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                    ? 'bg-green-50 text-green-700 border border-green-100'
                     : 'bg-amber-50 text-amber-700 border border-amber-100'
                 }`}>
                   {doc.status === 'Indexado'

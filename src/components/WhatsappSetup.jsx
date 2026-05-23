@@ -62,7 +62,7 @@ export default function WhatsappSetup() {
       title="Copiar"
     >
       {copied === id
-        ? <CheckCheck className="h-3.5 w-3.5 text-emerald-500" />
+        ? <CheckCheck className="h-3.5 w-3.5 text-green-500" />
         : <Copy className="h-3.5 w-3.5" />}
     </button>
   );
@@ -100,24 +100,24 @@ export default function WhatsappSetup() {
           <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
-                <MessageCircle className="h-5 w-5 text-emerald-600" />
+                <MessageCircle className="h-5 w-5 text-green-600" />
                 Estado de la Conexión
               </h2>
-              <span className="flex items-center gap-1.5 text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 px-3 py-1.5 rounded-full">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="flex items-center gap-1.5 text-[11px] font-bold bg-green-50 text-green-700 border border-green-100 px-3 py-1.5 rounded-full">
+                <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
                 WhatsApp Cloud API Activa
               </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-4 flex flex-col gap-1">
-                <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider flex items-center gap-1">
+              <div className="bg-green-50/60 border border-green-100 rounded-2xl p-4 flex flex-col gap-1">
+                <span className="text-[9px] font-bold text-green-600 uppercase tracking-wider flex items-center gap-1">
                   <Zap className="h-3 w-3" /> Mensajes Recibidos
                 </span>
-                <span className="text-2xl font-black text-emerald-700">
+                <span className="text-2xl font-black text-green-700">
                   {recentLogs.filter(l => l.type === 'webhook_received').length}
                 </span>
-                <span className="text-[10px] text-emerald-600 font-semibold">últimos 30 eventos</span>
+                <span className="text-[10px] text-green-600 font-semibold">últimos 30 eventos</span>
               </div>
               <div className="bg-red-50/60 border border-red-100 rounded-2xl p-4 flex flex-col gap-1">
                 <span className="text-[9px] font-bold text-red-500 uppercase tracking-wider flex items-center gap-1">
@@ -174,7 +174,7 @@ export default function WhatsappSetup() {
                   <ShieldCheck className="h-3 w-3" /> Token de Verificación
                 </label>
                 <div className="flex items-center bg-slate-50 border border-slate-100 rounded-xl px-3 py-2.5">
-                  <code className="flex-1 text-xs text-emerald-700 font-mono font-semibold">
+                  <code className="flex-1 text-xs text-green-700 font-mono font-semibold">
                     {VERIFY_TOKEN}
                   </code>
                   <CopyButton text={VERIFY_TOKEN} id="verify" />
