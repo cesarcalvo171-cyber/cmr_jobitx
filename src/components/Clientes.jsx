@@ -214,7 +214,7 @@ export default function Clientes({ clients }) {
           >
 
             {/* TOP BANNER */}
-            <div className="relative h-40 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600">
+            <div className="relative bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600 px-6 pt-5 pb-6 flex items-end gap-5">
 
               {/* BACK */}
               <button
@@ -225,37 +225,32 @@ export default function Clientes({ clients }) {
               </button>
 
               {/* AVATAR */}
-              <div className="absolute left-6 bottom-[-42px] z-30">
-                <div className="h-24 w-24 rounded-3xl overflow-hidden border-4 border-white shadow-xl bg-white">
-                  <img
-                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${activeContact.name}&backgroundColor=e2e8f0&fontSize=42&fontWeight=700`}
-                    alt={activeContact.name}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
+              <div className="h-20 w-20 rounded-3xl overflow-hidden border-4 border-white/80 shadow-xl bg-white shrink-0 mt-8">
+                <img
+                  src={`https://api.dicebear.com/7.x/initials/svg?seed=${activeContact.name}&backgroundColor=e2e8f0&fontSize=42&fontWeight=700`}
+                  alt={activeContact.name}
+                  className="h-full w-full object-cover"
+                />
               </div>
-            </div>
 
-            {/* CONTENT */}
-            <div className="flex-1 overflow-y-auto px-6 pt-14 pb-6">
-
-              {/* NAME */}
-              <div>
-                <h2 className="text-2xl font-black text-slate-800 leading-tight">
+              {/* NAME inline with avatar */}
+              <div className="pb-1 min-w-0">
+                <h2 className="text-xl font-black text-white leading-tight truncate">
                   {activeContact.name}
                 </h2>
-
                 <span
-                  className={`inline-flex mt-3 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] border ${getTagColor(
-                    activeContact.status
-                  )}`}
+                  className={`inline-flex mt-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-[0.15em] bg-white/20 text-white border border-white/30`}
                 >
                   {activeContact.status}
                 </span>
               </div>
+            </div>
+
+            {/* CONTENT */}
+            <div className="flex-1 overflow-y-auto px-6 pt-6 pb-6">
 
               {/* CONTACT INFO */}
-              <div className="mt-8 space-y-5">
+              <div className="mt-2 space-y-5">
 
                 <div className="flex items-center gap-4">
                   <div className="h-10 w-10 rounded-2xl bg-slate-100 flex items-center justify-center">
