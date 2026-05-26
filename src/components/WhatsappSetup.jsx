@@ -6,9 +6,9 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-const WEBHOOK_URL = 'https://cmr-phi.vercel.app/api/webhook';
-const PHONE_NUMBER_ID = '58517405';
-const VERIFY_TOKEN = 'jobitx2026';
+const WEBHOOK_URL = import.meta.env.VITE_WEBHOOK_URL || 'https://cmr-phi.vercel.app/api/webhook';
+const PHONE_NUMBER_ID = import.meta.env.VITE_WHATSAPP_PHONE_NUMBER_ID || '58517405';
+const VERIFY_TOKEN = import.meta.env.VITE_WHATSAPP_VERIFY_TOKEN || 'jobitx2026';
 
 export default function WhatsappSetup() {
   const [logs, setLogs] = useState([]);

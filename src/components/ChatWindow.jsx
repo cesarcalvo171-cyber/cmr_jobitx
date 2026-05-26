@@ -141,12 +141,38 @@ export default function ChatWindow({ chat, onSendMessage }) {
               </button>
             </div>
             <div className="flex items-center gap-4 px-4 text-xs font-semibold text-slate-500">
-              <button type="button" className="flex items-center gap-1.5 hover:text-slate-700">
+              <input 
+                type="file" 
+                id="file-upload" 
+                className="hidden" 
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    alert(`Archivo "${file.name}" seleccionado. Lógica de subida lista para producción.`);
+                    onSendMessage(chat.id, `[Archivo Adjunto: ${file.name}]`);
+                  }
+                }}
+              />
+              <label htmlFor="file-upload" className="flex items-center gap-1.5 hover:text-slate-700 cursor-pointer">
                 <Paperclip className="h-3.5 w-3.5" /> Adjuntar archivo
-              </button>
-              <button type="button" className="flex items-center gap-1.5 hover:text-slate-700">
+              </label>
+              
+              <input 
+                type="file" 
+                id="image-upload" 
+                accept="image/*" 
+                className="hidden" 
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    alert(`Imagen "${file.name}" seleccionada. Se subirá a Supabase Storage.`);
+                    onSendMessage(chat.id, `[Imagen Adjunta: ${file.name}]`);
+                  }
+                }}
+              />
+              <label htmlFor="image-upload" className="flex items-center gap-1.5 hover:text-slate-700 cursor-pointer">
                 <ImageIcon className="h-3.5 w-3.5" /> Imagen
-              </button>
+              </label>
             </div>
           </form>
         </div>

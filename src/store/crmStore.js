@@ -204,7 +204,10 @@ export const useCRMStore = create((set, get) => ({
 
       // 2. Disparar llamada REST a nuestra WhatsApp Cloud API para que el mensaje llegue al teléfono real.
       // Si el entorno local no tiene token, fallará silenciosamente o se simulará
-      fetch('/api/webhook', {
+      const webhookBase = import.meta.env.VITE_WEBHOOK_URL || window.location.origin;
+      const targetWebhookUrl = webhookBase.endsWith('/api/webhook') ? webhookBase : `${webhookBase}/api/webhook`;
+
+      fetch(targetWebhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
