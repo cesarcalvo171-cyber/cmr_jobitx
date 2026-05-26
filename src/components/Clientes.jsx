@@ -122,11 +122,11 @@ export default function Clientes({ clients }) {
             </div>
             
             <div className="px-6 pb-6 flex-1 overflow-y-auto relative">
-              <div className="absolute -top-10 left-6 h-20 w-20 rounded-2xl border-4 border-white bg-slate-200 overflow-hidden shadow-sm">
+              <div className="absolute -top-12 left-6 h-20 w-20 rounded-2xl border-4 border-white bg-slate-200 overflow-hidden shadow-md z-10">
                 <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${activeContact.name}`} alt="avatar" className="h-full w-full object-cover bg-white" />
               </div>
 
-              <div className="mt-14">
+              <div className="mt-16">
                 <h2 className="text-xl font-bold text-slate-800">{activeContact.name}</h2>
                 <span className="text-[10px] font-bold text-teal-600 uppercase tracking-widest">{activeContact.status}</span>
               </div>

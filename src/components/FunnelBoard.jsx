@@ -3,6 +3,11 @@ import { UserPlus, Search, Filter, Download, ArrowRight, ArrowLeft, MessageSquar
 
 export default function FunnelBoard({ leads, onAddLead }) {
   const [search, setSearch] = useState('');
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [newLeadName, setNewLeadName] = useState('');
+  const [newLeadPhone, setNewLeadPhone] = useState('');
+  const [newLeadStage, setNewLeadStage] = useState('Nuevo');
+  const [newLeadValue, setNewLeadValue] = useState('$49/mes');
   
   const filteredLeads = leads.filter(lead => 
     lead.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -17,6 +22,22 @@ export default function FunnelBoard({ leads, onAddLead }) {
     }
   };
 
+  const handleCreateLead = (e) => {
+    e.preventDefault();
+    if (!newLeadName.trim() || !newLeadPhone.trim()) return;
+    onAddLead({
+      name: newLeadName,
+      phone: newLeadPhone,
+      stage: newLeadStage,
+      value: newLeadValue
+    });
+    setNewLeadName('');
+    setNewLeadPhone('');
+    setNewLeadStage('Nuevo');
+    setNewLeadValue('$49/mes');
+    setIsFormOpen(false);
+  };
+
   return (
     <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50 flex flex-col h-full">
       {/* Header */}
@@ -26,19 +47,85 @@ export default function FunnelBoard({ leads, onAddLead }) {
           <p className="text-sm text-slate-500 font-medium mt-1">Administra y califica tus leads entrantes de WhatsApp y Web.</p>
         </div>
         <button 
-          onClick={() => {
-            const name = prompt("Nombre del Lead:");
-            const phone = prompt("Número de WhatsApp (ej. +521...):");
-            if (name && phone) {
-              onAddLead({ name, phone, stage: 'Nuevo', value: '$0/mes' });
-            }
-          }}
+          onClick={() => setIsFormOpen(true)}
           className="flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-bold shadow-md shadow-green-600/20 transition-all"
         >
           <UserPlus className="h-4 w-4" />
           Nuevo Lead
         </button>
       </div>
+
+      {/* Modal Formulario de Nuevo Lead */}
+      {isFormOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
+          <div className="bg-white rounded-3xl p-6 shadow-xl w-full max-w-md relative animate-fadeInUp">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Agregar Nuevo Lead</h3>
+            <form onSubmit={handleCreateLead} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-400 mb-1">NOMBRE COMPLETO</label>
+                <input 
+                  type="text" 
+                  value={newLeadName}
+                  onChange={(e) => setNewLeadName(e.target.value)}
+                  placeholder="ej. Cesar Calvo" 
+                  className="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-slate-700 font-medium"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-400 mb-1">NÚMERO WHATSAPP</label>
+                <input 
+                  type="text" 
+                  value={newLeadPhone}
+                  onChange={(e) => setNewLeadPhone(e.target.value)}
+                  placeholder="ej. +52184941603" 
+                  className="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-slate-700 font-medium"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 mb-1">ESTADO</label>
+                  <select 
+                    value={newLeadStage}
+                    onChange={(e) => setNewLeadStage(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-slate-700 font-semibold"
+                  >
+                    <option value="Nuevo">Nuevo</option>
+                    <option value="Demo Programada">Demo Programada</option>
+                    <option value="Cerrado">Cerrado - Ganado</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 mb-1">VALOR ESTIMADO</label>
+                  <input 
+                    type="text" 
+                    value={newLeadValue}
+                    onChange={(e) => setNewLeadValue(e.target.value)}
+                    placeholder="ej. $49/mes" 
+                    className="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-slate-700 font-medium"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button 
+                  type="button" 
+                  onClick={() => setIsFormOpen(false)}
+                  className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold text-sm transition-all"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  className="flex-1 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-sm transition-all shadow-md shadow-green-600/20"
+                >
+                  Guardar Lead
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">

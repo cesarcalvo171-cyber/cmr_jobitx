@@ -7,6 +7,8 @@ export default function NewChatModal({ isOpen, onClose }) {
   const [countryCode, setCountryCode] = useState('+52');
   const addClient = useCRMStore(state => state.addClient);
   const setActiveTab = useCRMStore(state => state.setActiveTab);
+  const chats = useCRMStore(state => state.chats);
+  const setActiveChatId = useCRMStore(state => state.setActiveChatId);
 
   if (!isOpen) return null;
 
@@ -25,12 +27,19 @@ export default function NewChatModal({ isOpen, onClose }) {
     setActiveTab('chats');
   };
 
-  const recientes = [
-    { id: 1, name: 'Ana S.', type: 'img', src: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ana', online: true },
-    { id: 2, name: 'Ricardo', type: 'initials', initials: 'RM', bg: 'bg-teal-400', online: false },
-    { id: 3, name: 'Luis G.', type: 'img', src: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Luis', online: true },
-    { id: 4, name: 'Elena', type: 'initials', initials: 'EV', bg: 'bg-orange-300', online: true },
-  ];
+  const handleSelectRecentContact = async (chatId) => {
+    await setActiveChatId(chatId);
+    onClose();
+    setActiveTab('chats');
+  };
+
+  // Filtrar los primeros 4 contactos reales de la base de datos que ya tienen chats activos
+  const recientesReales = chats.slice(0, 4).map(chat => ({
+    id: chat.id,
+    name: chat.name,
+    avatar: chat.avatar,
+    phone: chat.phone
+  }));
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
@@ -65,39 +74,38 @@ export default function NewChatModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          {/* Contactos Recientes */}
-          <div className="mb-8 opacity-50 pointer-events-none">
-            <div className="flex justify-between items-center mb-4">
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                CONTACTOS RECIENTES
-              </label>
-              <button className="text-[11px] font-bold text-green-600 hover:text-green-700">
-                Ver todos
-              </button>
-            </div>
-            
-            <div className="flex gap-6">
-              {recientes.map(contact => (
-                <div key={contact.id} className="flex flex-col items-center gap-2 cursor-pointer group">
-                  <div className="relative">
-                    <div className={`h-14 w-14 rounded-full border-2 border-white shadow-sm flex items-center justify-center text-white font-bold text-lg overflow-hidden transition-transform group-hover:scale-105 ${contact.bg || 'bg-slate-100'}`}>
-                      {contact.type === 'img' ? (
-                        <img src={contact.src} alt={contact.name} className="h-full w-full object-cover" />
-                      ) : (
-                        contact.initials
-                      )}
+          {/* Contactos Recientes Reales */}
+          {recientesReales.length > 0 && (
+            <div className="mb-8">
+              <div className="flex justify-between items-center mb-4">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  CONTACTOS ACTIVOS RECIENTES
+                </label>
+              </div>
+              
+              <div className="grid grid-cols-4 gap-4">
+                {recientesReales.map(contact => (
+                  <div 
+                    key={contact.id} 
+                    onClick={() => handleSelectRecentContact(contact.id)}
+                    className="flex flex-col items-center gap-2 cursor-pointer group text-center"
+                  >
+                    <div className="relative">
+                      <div className="h-12 w-12 rounded-full border-2 border-white shadow-sm flex items-center justify-center bg-slate-100 overflow-hidden transition-transform group-hover:scale-105">
+                        <img 
+                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${contact.name}`} 
+                          alt={contact.name} 
+                          className="h-full w-full object-cover" 
+                        />
+                      </div>
+                      <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white"></span>
                     </div>
-                    {contact.online ? (
-                      <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-white"></span>
-                    ) : (
-                      <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-slate-300 border-2 border-white"></span>
-                    )}
+                    <span className="text-[10px] font-bold text-slate-700 truncate w-full px-1">{contact.name.split(' ')[0]}</span>
                   </div>
-                  <span className="text-xs font-semibold text-slate-700">{contact.name}</span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* O Bien Divider */}
           <div className="flex items-center gap-4 mb-6">
@@ -121,6 +129,7 @@ export default function NewChatModal({ isOpen, onClose }) {
                   <option value="+52">+52</option>
                   <option value="+34">+34</option>
                   <option value="+1">+1</option>
+                  <option value="+505">+505</option>
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
