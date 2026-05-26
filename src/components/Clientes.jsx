@@ -111,22 +111,24 @@ export default function Clientes({ clients }) {
 
         {/* Right Details Card */}
         {activeContact && (
-          <div className={`w-full md:w-[320px] bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col shrink-0 overflow-hidden relative ${showDetailsOnMobile ? 'flex' : 'hidden md:flex'}`}>
-            <div className="h-24 md:h-32 bg-gradient-to-r from-green-500 to-emerald-600 shrink-0 relative">
+          <div className={`w-full md:w-[320px] bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col shrink-0 overflow-visible relative ${showDetailsOnMobile ? 'flex' : 'hidden md:flex'}`}>
+            {/* Header Banner - Overflow visible, z-0 */}
+            <div className="h-24 md:h-32 bg-gradient-to-r from-green-500 to-emerald-600 shrink-0 relative rounded-t-2xl z-0 overflow-visible">
               <button 
                 onClick={() => setShowDetailsOnMobile(false)}
-                className="md:hidden absolute top-4 left-4 p-1.5 rounded-full bg-black/20 text-white hover:bg-black/30 transition-colors"
+                className="md:hidden absolute top-4 left-4 p-1.5 rounded-full bg-black/20 text-white hover:bg-black/30 transition-colors z-20"
               >
                 <ArrowLeft className="h-4 w-4" />
               </button>
-            </div>
-            
-            <div className="px-6 pb-6 flex-1 overflow-y-auto relative">
-              <div className="absolute -top-12 left-6 h-20 w-20 rounded-2xl border-4 border-white bg-slate-200 overflow-hidden shadow-md z-10">
+              {/* Avatar absolute on the boundary, z-30 to stay on top */}
+              <div className="absolute -bottom-10 left-6 h-20 w-20 rounded-2xl border-4 border-white bg-slate-200 overflow-hidden shadow-md z-30">
                 <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${activeContact.name}`} alt="avatar" className="h-full w-full object-cover bg-white" />
               </div>
-
-              <div className="mt-16">
+            </div>
+            
+            {/* Content area starts below the avatar space */}
+            <div className="px-6 pb-6 pt-12 flex-1 overflow-y-auto relative z-10">
+              <div>
                 <h2 className="text-xl font-bold text-slate-800">{activeContact.name}</h2>
                 <span className="text-[10px] font-bold text-teal-600 uppercase tracking-widest">{activeContact.status}</span>
               </div>
