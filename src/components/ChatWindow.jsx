@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import  { useState, useRef, useEffect } from 'react';
 import { 
   Send, Paperclip, Smile, Phone, Video, MoreVertical, 
   CheckCheck, Image as ImageIcon, TrendingUp, Ban, MessageSquare

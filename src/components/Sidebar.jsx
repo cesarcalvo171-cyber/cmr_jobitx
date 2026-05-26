@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { 
   LayoutDashboard, 
   Target, 
@@ -82,9 +82,7 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenNewChat }) {
         <h1 className="font-bold text-white text-xl tracking-tight font-outfit flex items-center gap-2">
           Jobitx CRM
         </h1>
-        <span className="text-[10px] font-bold text-green-400 tracking-widest uppercase mt-1">
-          Enterprise Tier
-        </span>
+        
       </div>
 
       {/* Navigation */}
