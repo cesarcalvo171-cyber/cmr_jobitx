@@ -83,6 +83,7 @@ export const useCRMStore = create((set, get) => ({
 
           return {
             id: c.id,
+            contactId: contact ? contact.id : null,
             name: contact ? contact.name : 'Contacto Sin Nombre',
             avatar: contact ? contact.avatar || contact.name.substring(0, 2).toUpperCase() : '??',
             phone: contact ? contact.phone : '',
@@ -94,7 +95,11 @@ export const useCRMStore = create((set, get) => ({
             unreadCount: c.unread_count || 0,
             platform: 'WhatsApp',
             status: contact && contact.bot_enabled ? 'IA' : 'Humano',
+            convStatus: c.status === 'snoozed' ? 'Pendiente' : c.status === 'archived' ? 'Cerrado' : 'En Ejecución',
+            rawConvStatus: c.status || 'active',
+            botEnabled: contact ? contact.bot_enabled : true,
             labels: contact ? contact.tags || [] : [],
+            leadScore: contact ? contact.lead_score || 'cold' : 'cold',
             messages: msgs.map((m) => ({
               id: m.id,
               sender: m.role === 'user' ? 'client' : m.role === 'assistant' ? 'ia' : 'user',
@@ -113,6 +118,39 @@ export const useCRMStore = create((set, get) => ({
     }
   },
 
+  // Actualizar Estado de Conversación (En Ejecución, Pendiente, Cerrado)
+  updateConversationStatus: async (chatId, newFriendlyStatus) => {
+    const dbStatus = newFriendlyStatus === 'Pendiente' ? 'snoozed'
+      : newFriendlyStatus === 'Cerrado' ? 'archived'
+      : 'active';
+
+    try {
+      const { error } = await supabase
+        .from('conversations')
+        .update({ status: dbStatus })
+        .eq('id', chatId);
+
+      if (error) throw error;
+
+      set((state) => ({
+        chats: state.chats.map((chat) => 
+          chat.id === chatId 
+            ? { ...chat, convStatus: newFriendlyStatus, rawConvStatus: dbStatus } 
+            : chat
+        ),
+        clients: state.clients.map((client) => {
+          const chat = state.chats.find(c => c.id === chatId);
+          if (chat && chat.phone === client.phone) {
+            return { ...client, convStatus: newFriendlyStatus };
+          }
+          return client;
+        })
+      }));
+    } catch (err) {
+      console.error('Error al actualizar estado de la conversación:', err);
+    }
+  },
+
   // Cargar Contactos (Clientes)
   fetchClients: async () => {
     set({ loading: true, error: null });
@@ -124,16 +162,24 @@ export const useCRMStore = create((set, get) => ({
 
       if (error) throw error;
 
-      const formattedClients = data.map((c) => ({
-        id: c.id,
-        name: c.name,
-        phone: c.phone,
-        email: `${c.phone}@crm.local`,
-        status: c.lead_score === 'hot' ? 'Cerrado - Ganado' : c.lead_score === 'warm' ? 'Demo Programada' : 'Nuevo',
-        creationDate: new Date(c.created_at).toISOString().split('T')[0],
-        labels: c.tags || [],
-        notes: c.blocked ? '⚠️ CONTACTO BLOQUEADO' : 'Gestionado vía TalosFlow.'
-      }));
+      const formattedClients = data.map((c) => {
+        const matchingChat = get().chats.find((chat) => chat.phone === c.phone || chat.contactId === c.id);
+        return {
+          id: c.id,
+          chatId: matchingChat ? matchingChat.id : null,
+          name: c.name,
+          phone: c.phone,
+          email: `${c.phone}@crm.local`,
+          status: c.lead_score === 'hot' ? 'Cerrado - Ganado' : c.lead_score === 'warm' ? 'Demo Programada' : 'Nuevo',
+          leadScore: c.lead_score || 'cold',
+          convStatus: matchingChat ? matchingChat.convStatus : 'En Ejecución',
+          botEnabled: c.bot_enabled !== false,
+          creationDate: new Date(c.created_at).toISOString().split('T')[0],
+          labels: c.tags || [],
+          notes: c.blocked ? '⚠️ CONTACTO BLOQUEADO' : 'Gestionado vía TalosFlow.',
+          messages: matchingChat ? matchingChat.messages : []
+        };
+      });
 
       set({ clients: formattedClients, loading: false });
     } catch (err) {
@@ -165,11 +211,13 @@ export const useCRMStore = create((set, get) => ({
 
       const formattedLeads = data.map((l) => ({
         id: l.id,
+        contactId: l.contacts ? l.contacts.id : null,
         name: l.contacts ? l.contacts.name : 'Lead Anónimo',
-        company: l.contacts ? `WhatsApp ${l.contacts.phone}` : 'Ventas',
-        value: l.value || '$0/mes',
-        stage: l.stage || 'Nuevo',
         phone: l.contacts ? l.contacts.phone : '',
+        monto: parseFloat(l.value) || 0,
+        stage: l.stage || 'Nuevo',
+        score: l.score || 'cold',
+        reason: l.reason || '',
         avatarColor: l.score === 'hot' ? 'bg-emerald-100 text-emerald-700' : l.score === 'warm' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-700'
       }));
 
@@ -179,6 +227,8 @@ export const useCRMStore = create((set, get) => ({
       set({ error: err.message, loading: false });
     }
   },
+
+
 
   // --- OPERACIONES DE MUTACIONES (ESCRITURAS) ---
 
@@ -392,16 +442,19 @@ export const useCRMStore = create((set, get) => ({
         contact = newContact;
       }
 
-      // 2. Insertar Lead
-      const score = leadData.stage === 'Cerrado' ? 'hot' : leadData.stage === 'Demo Programada' ? 'warm' : 'cold';
+      // 2. Insertar Lead con monto numerico del prestamo
+      const score = leadData.stage === 'Prestamo Cerrado' ? 'hot' 
+        : leadData.stage === 'Prestamo Programado' ? 'warm' 
+        : leadData.stage === 'En Proceso' ? 'warm'
+        : 'cold';
       const { error: lErr } = await supabase
         .from('leads')
         .insert({
           contact_id: contact.id,
-          stage: leadData.stage,
-          value: leadData.value,
+          stage: leadData.stage || 'Nuevo',
+          value: parseFloat(leadData.monto) || 0,
           score,
-          reason: 'Creado desde pipeline manual'
+          reason: leadData.reason || 'Prestamo solicitado via WhatsApp'
         });
 
       if (lErr) throw lErr;

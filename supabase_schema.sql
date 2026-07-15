@@ -1,5 +1,5 @@
 -- supabase_schema.sql
--- Script completo de base de datos PostgreSQL para TalosFlow CRM
+-- Script completo de base de datos PostgreSQL para CRM
 
 -- Habilitar extensión UUID
 create extension if not exists "uuid-ossp";
