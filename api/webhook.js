@@ -77,9 +77,14 @@ export default async function handler(req, res) {
       }
 
       const fromPhone   = message.from;
-      const contactName = contact.profile?.name || 'Cliente WhatsApp';
+      const contactName = contact?.profile?.name || 'Cliente WhatsApp';
       const textContent = message.text?.body || '';
       const waMsgId     = message.id;
+
+      // Omitir ecos de mensajes del agente o de la propia cuenta de negocios
+      if (fromPhone === 'agent' || contactName === 'Agente' || fromPhone === process.env.WHATSAPP_PHONE_NUMBER_ID) {
+        return res.status(200).json({ success: true, message: 'Echo de agente omitido' });
+      }
 
       if (!textContent.trim()) {
         return res.status(200).json({ success: true, message: 'Mensaje sin texto omitido' });
