@@ -14,7 +14,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
     { id: 'leads', label: 'Préstamos', icon: Target },
     { id: 'contacts', label: 'Clientes', icon: Contact },
     { id: 'chats', label: 'Conversaciones', icon: MessageSquare },
-    { id: 'settings', label: 'Configuración IA', icon: Settings },
+    // { id: 'settings', label: 'Configuración IA', icon: Settings },
   ];
 
   const renderLink = (item) => {
