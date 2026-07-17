@@ -252,15 +252,15 @@ export const useCRMStore = create((set, get) => ({
 
       if (msgError) throw msgError;
 
-      // 2. Enviar el mensaje a través de nuestro proxy serverless /api/send (para evitar bloqueos CORS del navegador)
-      fetch('/api/send', {
+      // 2. Enviar el mensaje directamente hacia el Webhook de n8n
+      fetch('https://mdter.app.n8n.cloud/webhook/enviar-humano', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           phone: activeChat.phone,
           text: text
         })
-      }).catch(err => console.warn('Error enviando a /api/send:', err));
+      }).catch(err => console.warn('Error enviando directamente a n8n:', err));
 
       // NOTA: El trigger de realtime actualizará los estados localmente, pero
       // actualizamos de forma optimista para que la interfaz se sienta instantánea
