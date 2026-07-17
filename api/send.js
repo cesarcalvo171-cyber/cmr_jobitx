@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const n8nWebhookUrl = process.env.VITE_N8N_SEND_WEBHOOK || 'https://mdter.app.n8n.cloud/webhook/enviar-humano';
+    const n8nWebhookUrl = 'https://mdter.app.n8n.cloud/webhook/enviar-humano';
     
     const response = await fetch(n8nWebhookUrl, {
       method: 'POST',
