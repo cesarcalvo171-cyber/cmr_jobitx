@@ -2,12 +2,12 @@ import { useState, useRef, useEffect } from 'react';
 import {
   Send, Smile, MessageSquare,
   CheckCheck, Bot, UserCheck, Tag, FileText, Ban, Info,
-  PlayCircle, Clock, Archive
+  PlayCircle, Clock, Archive, Trash2
 } from 'lucide-react';
 import { useCRMStore } from '../store/crmStore';
 
 export default function ChatWindow({ chat, onSendMessage, onToggleStatus }) {
-  const { updateConversationStatus } = useCRMStore();
+  const { updateConversationStatus, deleteChat } = useCRMStore();
   const [inputText, setInputText] = useState('');
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef(null);
@@ -291,9 +291,20 @@ export default function ChatWindow({ chat, onSendMessage, onToggleStatus }) {
           </div>
         </div>
 
-        {/* Botón Bloquear */}
-        <div className="p-5 border-t border-slate-100 bg-white">
-          <button className="w-full flex items-center justify-center gap-2 py-2.5 bg-slate-50 border border-slate-200 text-slate-500 rounded-2xl font-bold text-xs hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all">
+        {/* Botones de Acción (Eliminar / Bloquear) */}
+        <div className="p-5 border-t border-slate-100 bg-white space-y-2">
+          <button
+            onClick={() => {
+              if (window.confirm(`¿Estás seguro de que deseas eliminar permanentemente la conversación con ${chat.name}?`)) {
+                deleteChat(chat.id);
+              }
+            }}
+            className="w-full flex items-center justify-center gap-2 py-2.5 bg-red-50 border border-red-200 text-red-600 rounded-2xl font-bold text-xs hover:bg-red-100 transition-all cursor-pointer shadow-2xs"
+          >
+            <Trash2 className="h-3.5 w-3.5" /> Eliminar conversación
+          </button>
+
+          <button className="w-full flex items-center justify-center gap-2 py-2.5 bg-slate-50 border border-slate-200 text-slate-500 rounded-2xl font-bold text-xs hover:bg-slate-100 transition-all cursor-pointer">
             <Ban className="h-3.5 w-3.5" /> Bloquear contacto
           </button>
         </div>

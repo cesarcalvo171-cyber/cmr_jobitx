@@ -378,6 +378,28 @@ export const useCRMStore = create((set, get) => ({
     }
   },
 
+  // Eliminar Chat/Conversación completa
+  deleteChat: async (chatId) => {
+    try {
+      const chat = get().chats.find(c => c.id === chatId);
+      if (!chat) return;
+
+      if (chat.contactId) {
+        await supabase.from('contacts').delete().eq('id', chat.contactId);
+      } else {
+        await supabase.from('conversations').delete().eq('id', chatId);
+      }
+
+      set((state) => ({
+        activeChatId: state.activeChatId === chatId ? null : state.activeChatId,
+        chats: state.chats.filter(c => c.id !== chatId),
+        clients: state.clients.filter(c => c.id !== chat.contactId)
+      }));
+    } catch (err) {
+      console.error('Error al eliminar el chat:', err);
+    }
+  },
+
   // Mover Etapa Lead Kanban
   moveLead: async (leadId, nextStage) => {
     try {
