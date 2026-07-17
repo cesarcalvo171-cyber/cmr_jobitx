@@ -252,17 +252,15 @@ export const useCRMStore = create((set, get) => ({
 
       if (msgError) throw msgError;
 
-      // 2. Enviar el mensaje a través de n8n hacia WhatsApp
-      const targetWebhookUrl = import.meta.env.VITE_N8N_SEND_WEBHOOK || 'https://mdter.app.n8n.cloud/webhook/enviar-humano';
-      
-      fetch(targetWebhookUrl, {
+      // 2. Enviar el mensaje a través de nuestro proxy serverless /api/send (para evitar bloqueos CORS del navegador)
+      fetch('/api/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           phone: activeChat.phone,
           text: text
         })
-      }).catch(err => console.warn('Error enviando a n8n:', err));
+      }).catch(err => console.warn('Error enviando a /api/send:', err));
 
       // NOTA: El trigger de realtime actualizará los estados localmente, pero
       // actualizamos de forma optimista para que la interfaz se sienta instantánea
