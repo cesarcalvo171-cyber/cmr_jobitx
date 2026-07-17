@@ -252,35 +252,17 @@ export const useCRMStore = create((set, get) => ({
 
       if (msgError) throw msgError;
 
-      // 2. Disparar llamada REST a nuestra WhatsApp Cloud API para que el mensaje llegue al teléfono real.
-      // Si el entorno local no tiene token, fallará silenciosamente o se simulará
-      const webhookBase = import.meta.env.VITE_WEBHOOK_URL || window.location.origin;
-      const targetWebhookUrl = webhookBase.endsWith('/api/webhook') ? webhookBase : `${webhookBase}/api/webhook`;
-
+      // 2. Enviar el mensaje a través de n8n hacia WhatsApp
+      const targetWebhookUrl = import.meta.env.VITE_N8N_SEND_WEBHOOK || 'https://mdter.app.n8n.cloud/webhook/enviar-humano';
+      
       fetch(targetWebhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          object: 'whatsapp_business_account',
-          entry: [{
-            id: 'agent_sent',
-            changes: [{
-              value: {
-                messaging_product: 'whatsapp',
-                metadata: { phone_number_id: 'agent_phone' },
-                contacts: [{ profile: { name: 'Agente' }, wa_id: activeChat.phone }],
-                messages: [{
-                  id: newMsg.id,
-                  from: 'agent',
-                  text: { body: text },
-                  timestamp: Math.floor(Date.now() / 1000)
-                }]
-              },
-              field: 'messages'
-            }]
-          }]
+          phone: activeChat.phone,
+          text: text
         })
-      }).catch(err => console.warn('Llamada a Webhook WhatsApp simulada/fallida:', err));
+      }).catch(err => console.warn('Error enviando a n8n:', err));
 
       // NOTA: El trigger de realtime actualizará los estados localmente, pero
       // actualizamos de forma optimista para que la interfaz se sienta instantánea
@@ -509,5 +491,87 @@ export const useCRMStore = create((set, get) => ({
 
       return { chats: updatedChats };
     });
-  }
+  },
+
+  // --- DEMO: Cargar conversación de prueba bot → humano ---
+  loadDemoConversation: async () => {
+    set({ loading: true });
+    try {
+      const DEMO_PHONE = '+50200000001';
+      const DEMO_NAME  = 'Carlos Méndez (Demo)';
+
+      // 1. Crear o reutilizar contacto demo
+      let contact;
+      const { data: existing } = await supabase
+        .from('contacts')
+        .select('id, name, bot_enabled')
+        .eq('phone', DEMO_PHONE)
+        .limit(1);
+
+      if (existing && existing.length > 0) {
+        contact = existing[0];
+        // Resetear bot a activo para la demo
+        await supabase.from('contacts').update({ bot_enabled: true }).eq('id', contact.id);
+        contact.bot_enabled = true;
+      } else {
+        const { data: created } = await supabase
+          .from('contacts')
+          .insert({ name: DEMO_NAME, phone: DEMO_PHONE, bot_enabled: true, blocked: false, lead_score: 'warm', tags: ['demo'] })
+          .select()
+          .single();
+        contact = created;
+      }
+
+      // 2. Cerrar conversaciones anteriores del contacto demo y crear nueva
+      await supabase.from('conversations').update({ status: 'archived' }).eq('contact_id', contact.id);
+      const { data: conv } = await supabase
+        .from('conversations')
+        .insert({ contact_id: contact.id, status: 'active', unread_count: 2 })
+        .select()
+        .single();
+
+      // 3. Insertar mensajes de la demo (flujo bot → humano)
+      const now = new Date();
+      const t = (minusMinutes) => new Date(now.getTime() - minusMinutes * 60000).toISOString();
+
+      const demoMessages = [
+        { role: 'user',      content: 'Hola, buenos días. Quiero información sobre un préstamo personal.',                                                                     created_at: t(18) },
+        { role: 'assistant', content: '¡Buenos días, Carlos! Soy el asistente virtual de TalosFlow Préstamos. Con mucho gusto te ayudo. ¿Qué monto necesitas?',               created_at: t(17) },
+        { role: 'user',      content: 'Necesito $5,000 dólares. Es para un negocio.',                                                                                          created_at: t(16) },
+        { role: 'assistant', content: 'Perfecto. Tenemos plazos de 6, 12 y 24 meses. ¿Cuál se adapta mejor a tu presupuesto?',                                                 created_at: t(15) },
+        { role: 'user',      content: 'A 12 meses estaría bien. ¿Cuál sería la cuota mensual aproximada?',                                                                     created_at: t(14) },
+        { role: 'assistant', content: 'Con $5,000 a 12 meses, la cuota aproximada sería de $458/mes con una tasa del 18% anual. ¿Te gustaría continuar con la solicitud?',     created_at: t(13) },
+        { role: 'user',      content: 'Sí, me interesa. ¿Qué documentos necesito?',                                                                                            created_at: t(12) },
+        { role: 'assistant', content: 'Necesitarás: DPI vigente, comprobante de ingresos (últimos 3 meses) y una referencia personal. ¿Tienes todos esos documentos?',         created_at: t(11) },
+        { role: 'user',      content: 'Sí, los tengo todos. ¿Cómo procedo?',                                                                                                   created_at: t(10) },
+        // --- AQUÍ EL ASESOR DESACTIVA EL BOT Y TOMA EL CONTROL ---
+        { role: 'agent',     content: '¡Hola Carlos! Soy María, tu asesora personal. Vi tu solicitud y quiero ayudarte directamente. Tu perfil luce muy bien para el préstamo. 😊', created_at: t(8) },
+        { role: 'user',      content: '¡Hola María! Qué bueno hablar con una persona. ¿Cuándo podría tener el dinero?',                                                        created_at: t(7) },
+        { role: 'agent',     content: 'Si entregás los documentos hoy o mañana, podemos tenerte el desembolso en 48 horas hábiles. ¿Podés pasar por la oficina mañana a las 10am?', created_at: t(5) },
+        { role: 'user',      content: 'Perfecto, ahí estaré. Muchas gracias.',                                                                                                  created_at: t(3) },
+        { role: 'agent',     content: 'Con gusto Carlos. Te mando la dirección de la oficina por aquí. ¡Hasta mañana! 👋',                                                      created_at: t(1) },
+      ];
+
+      await supabase.from('messages').insert(
+        demoMessages.map(m => ({ ...m, conversation_id: conv.id, status: 'received', whatsapp_message_id: null }))
+      );
+
+      // 4. Marcar contacto como bot desactivado (estado final de la demo)
+      await supabase.from('contacts').update({ bot_enabled: false }).eq('id', contact.id);
+
+      // 5. Recargar chats y navegar al demo
+      await get().fetchChats();
+      const updatedChats = get().chats;
+      const demoChat = updatedChats.find(c => c.contactPhone === DEMO_PHONE || c.phone === DEMO_PHONE);
+      if (demoChat) get().setActiveChatId(demoChat.id);
+
+      set({ loading: false });
+      return { success: true, conversationId: conv.id };
+    } catch (err) {
+      console.error('Error cargando demo:', err);
+      set({ loading: false });
+      return { success: false, error: err.message };
+    }
+  },
+
 }));
