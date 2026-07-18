@@ -253,14 +253,19 @@ export const useCRMStore = create((set, get) => ({
       if (msgError) throw msgError;
 
       // 2. Enviar el mensaje directamente hacia el Webhook de n8n
-      fetch('https://mdter.app.n8n.cloud/webhook/enviar-humano', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          phone: activeChat.phone,
-          text: text
-        })
-      }).catch(err => console.warn('Error enviando directamente a n8n:', err));
+      const webhookUrl = import.meta.env.VITE_WEBHOOK_URL || import.meta.env.VITE_N8N_SEND_WEBHOOK_TEST;
+      if (!webhookUrl) {
+        console.error('Faltan las variables de entorno para el Webhook (VITE_WEBHOOK_URL o VITE_N8N_SEND_WEBHOOK_TEST)');
+      } else {
+        fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone: activeChat.phone,
+            text: text
+          })
+        }).catch(err => console.warn('Error enviando directamente a n8n:', err));
+      }
 
       // NOTA: El trigger de realtime actualizará los estados localmente, pero
       // actualizamos de forma optimista para que la interfaz se sienta instantánea
