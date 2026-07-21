@@ -1,0 +1,783 @@
+{
+  "name": "TalosFlow CRM - IA Financiera Nativa",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ]
+      },
+      "id": "node-whatsapp-trigger",
+      "name": "WhatsApp Trigger",
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1000,
+        300
+      ],
+      "webhookId": "talosflow-whatsapp-v2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-is-text",
+              "leftValue": "={{ $json.messages[0].type }}",
+              "rightValue": "text",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "node-if-valid",
+      "name": "Es Mensaje Valido",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "as1",
+              "name": "from_phone",
+              "type": "string",
+              "value": "={{ $json.messages[0].from }}"
+            },
+            {
+              "id": "as2",
+              "name": "text",
+              "type": "string",
+              "value": "={{ $json.messages[0].text.body }}"
+            },
+            {
+              "id": "as3",
+              "name": "wa_message_id",
+              "type": "string",
+              "value": "={{ $json.messages[0].id }}"
+            },
+            {
+              "id": "as4",
+              "name": "contact_name",
+              "type": "string",
+              "value": "={{ $json.contacts && $json.contacts[0] && $json.contacts[0].profile ? $json.contacts[0].profile.name : 'Cliente WhatsApp' }}"
+            }
+          ]
+        }
+      },
+      "id": "node-extract-data",
+      "name": "Extraer Datos del Mensaje",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -560,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "contacts",
+        "limit": 1,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "phone",
+              "condition": "eq",
+              "keyValue": "={{ $('Extraer Datos del Mensaje').item.json.from_phone }}"
+            }
+          ]
+        }
+      },
+      "id": "node-db-get-contact",
+      "name": "DB: Buscar Contacto",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-contact-exists",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "node-if-contact-exists",
+      "name": "¿Contacto Existe?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "tableId": "contacts",
+        "dataToSend": "defineBelow",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "phone",
+              "fieldValue": "={{ $('Extraer Datos del Mensaje').item.json.from_phone }}"
+            },
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $('Extraer Datos del Mensaje').item.json.contact_name }}"
+            },
+            {
+              "fieldId": "bot_enabled",
+              "fieldValue": "true"
+            }
+          ]
+        }
+      },
+      "id": "node-db-create-contact",
+      "name": "DB: Crear Contacto",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        40,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "as-cid",
+              "name": "contact_id",
+              "type": "string",
+              "value": "={{ $('¿Contacto Existe?').item.json.id ? $('¿Contacto Existe?').item.json.id : $('DB: Crear Contacto').item.json.id }}"
+            },
+            {
+              "id": "as-bot",
+              "name": "bot_enabled",
+              "type": "boolean",
+              "value": "={{ $('¿Contacto Existe?').item.json.id ? $('¿Contacto Existe?').item.json.bot_enabled : true }}"
+            }
+          ]
+        }
+      },
+      "id": "node-merge-contact",
+      "name": "Unificar Contacto",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "conversations",
+        "limit": 1,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "contact_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.contact_id }}"
+            },
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "active"
+            }
+          ]
+        }
+      },
+      "id": "node-db-get-conversation",
+      "name": "DB: Buscar Conversación",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        440,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-conv-exists",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "node-if-conv-exists",
+      "name": "¿Conversación Existe?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        640,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "tableId": "conversations",
+        "dataToSend": "defineBelow",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "contact_id",
+              "fieldValue": "={{ $('Unificar Contacto').item.json.contact_id }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "active"
+            }
+          ]
+        }
+      },
+      "id": "node-db-create-conversation",
+      "name": "DB: Crear Conversación",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        840,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "as-convid",
+              "name": "conversation_id",
+              "type": "string",
+              "value": "={{ $('¿Conversación Existe?').item.json.id ? $('¿Conversación Existe?').item.json.id : $('DB: Crear Conversación').item.json.id }}"
+            }
+          ]
+        }
+      },
+      "id": "node-merge-conversation",
+      "name": "Unificar Conversación",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "tableId": "messages",
+        "dataToSend": "defineBelow",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "conversation_id",
+              "fieldValue": "={{ $json.conversation_id }}"
+            },
+            {
+              "fieldId": "role",
+              "fieldValue": "user"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $('Extraer Datos del Mensaje').item.json.text }}"
+            },
+            {
+              "fieldId": "whatsapp_message_id",
+              "fieldValue": "={{ $('Extraer Datos del Mensaje').item.json.wa_message_id }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "received"
+            }
+          ]
+        }
+      },
+      "id": "node-db-insert-message",
+      "name": "DB: Guardar Mensaje Entrante",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-bot-enabled",
+              "leftValue": "={{ $('Unificar Contacto').item.json.bot_enabled }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "node-if-bot-active",
+      "name": "Verificar Bot Activo",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Extraer Datos del Mensaje').item.json.text }}",
+        "options": {
+          "systemMessage": "# ROL\nEres el asistente virtual de [NOMBRE_EMPRESA], una institución financiera. Atiendes clientes por WhatsApp de forma clara, profesional y cercana, ayudando con información general y gestión de créditos.\n\n# INFORMACIÓN DE LA EMPRESA\n- Nombre: [NOMBRE_EMPRESA]\n- Sucursales:\n  1. [Sucursal 1 - Dirección - Horario]\n  2. [Sucursal 2 - Dirección - Horario]\n- Teléfonos de contacto: [Teléfono 1], [Teléfono 2]\n- Horario de atención: [Horario]\n- Productos: [créditos personales, microcréditos, represtamos, etc.]\n\n# REGLAS DE NEGOCIO Y CONSULTA\n- Nunca inventes tasas, montos o aprobaciones que no estén confirmados por la API o Supabase.\n- Si el cliente pide hablar con un asesor humano, indícale que será contactado y no continúes simulando ser humano.\n\n# HERRAMIENTAS DISPONIBLES\n1. **Tool: Info de Empresa (Supabase)** — Úsala para consultar datos dinámicos: sucursales, tasas vigentes, reglas de negocio almacenadas en la base de datos.\n2. **Tool: Consultar Crédito (API)** — ÚSALA SOLO cuando el cliente haya dado su NÚMERO DE IDENTIFICACIÓN y su NÚMERO DE PRÉSTAMO.\n\n# LÍMITES\n- No des asesoría legal o financiera fuera de las reglas de negocio definidas.\n- No compartas información de otros clientes.",
+          "maxIterations": 10
+        }
+      },
+      "id": "node-ai-agent",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1680,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-5",
+          "mode": "list"
+        },
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "node-claude-model",
+      "name": "Modelo Claude",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        1540,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Unificar Conversación').item.json.conversation_id }}",
+        "contextWindowLength": 10
+      },
+      "id": "node-postgres-memory",
+      "name": "Postgres Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        1680,
+        500
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dU5wekh6iRB5hwkr",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Consulta información dinámica de la empresa almacenada en Supabase.",
+        "method": "GET",
+        "url": "=https://aoiayenkyajaiueywslf.supabase.co/rest/v1/{{ $fromAI('tabla', 'nombre de la tabla a consultar') }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "YOUR_SUPABASE_KEY"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_SUPABASE_KEY"
+            }
+          ]
+        }
+      },
+      "id": "node-tool-info-empresa",
+      "name": "Tool: Info Empresa",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        1840,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Consulta un crédito específico.",
+        "method": "GET",
+        "url": "https://api.tuempresa.com/creditos/consulta",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "identificacion",
+              "value": "={{ $fromAI('identificacion') }}"
+            },
+            {
+              "name": "numero_prestamo",
+              "value": "={{ $fromAI('numero_prestamo') }}"
+            }
+          ]
+        }
+      },
+      "id": "node-tool-consultar-credito",
+      "name": "Tool: Consultar Crédito",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        1980,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "YOUR_PHONE_NUMBER_ID",
+        "recipientPhoneNumber": "={{ $('Extraer Datos del Mensaje').item.json.from_phone }}",
+        "textBody": "={{ $json.output }}"
+      },
+      "id": "node-send-whatsapp",
+      "name": "Enviar WhatsApp API",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        1980,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "tableId": "messages",
+        "dataToSend": "defineBelow",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "conversation_id",
+              "fieldValue": "={{ $('Unificar Conversación').item.json.conversation_id }}"
+            },
+            {
+              "fieldId": "role",
+              "fieldValue": "assistant"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $('AI Agent').item.json.output }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "sent"
+            }
+          ]
+        }
+      },
+      "id": "node-db-insert-ai-message",
+      "name": "DB: Guardar Respuesta IA",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2200,
+        260
+      ]
+    }
+  ],
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Es Mensaje Valido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es Mensaje Valido": {
+      "main": [
+        [
+          {
+            "node": "Extraer Datos del Mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Datos del Mensaje": {
+      "main": [
+        [
+          {
+            "node": "DB: Buscar Contacto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB: Buscar Contacto": {
+      "main": [
+        [
+          {
+            "node": "¿Contacto Existe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Contacto Existe?": {
+      "main": [
+        [
+          {
+            "node": "Unificar Contacto",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DB: Crear Contacto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB: Crear Contacto": {
+      "main": [
+        [
+          {
+            "node": "Unificar Contacto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unificar Contacto": {
+      "main": [
+        [
+          {
+            "node": "DB: Buscar Conversación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB: Buscar Conversación": {
+      "main": [
+        [
+          {
+            "node": "¿Conversación Existe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Conversación Existe?": {
+      "main": [
+        [
+          {
+            "node": "Unificar Conversación",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DB: Crear Conversación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB: Crear Conversación": {
+      "main": [
+        [
+          {
+            "node": "Unificar Conversación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unificar Conversación": {
+      "main": [
+        [
+          {
+            "node": "DB: Guardar Mensaje Entrante",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB: Guardar Mensaje Entrante": {
+      "main": [
+        [
+          {
+            "node": "Verificar Bot Activo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Bot Activo": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp API": {
+      "main": [
+        [
+          {
+            "node": "DB: Guardar Respuesta IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modelo Claude": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Info Empresa": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Consultar Crédito": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

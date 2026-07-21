@@ -1,8 +1,24 @@
 import React, { useState } from 'react';
-import { Search, Bot, UserCheck, PlayCircle, Clock, Archive } from 'lucide-react';
+import { Search, Bot, UserCheck, FlaskConical, Loader2, CheckCircle2 } from 'lucide-react';
+import { useCRMStore } from '../store/crmStore';
 
 export default function ChatList({ chats = [], activeChatId, setActiveChatId, searchQuery, setSearchQuery }) {
   const [activeFilter, setActiveFilter] = useState('todos');
+  const [demoState, setDemoState] = useState('idle'); // idle | loading | done
+  const { loadDemoConversation, setActiveTab } = useCRMStore();
+
+  const handleLoadDemo = async () => {
+    setDemoState('loading');
+    const result = await loadDemoConversation();
+    if (result?.success) {
+      setDemoState('done');
+      setActiveTab('chats');
+      setTimeout(() => setDemoState('idle'), 3000);
+    } else {
+      setDemoState('idle');
+      alert('Error cargando la demo. Revisa la consola.');
+    }
+  };
 
   // Filtrar por texto y por estado de conversación
   const filteredChats = chats.filter(chat => {
@@ -141,6 +157,29 @@ export default function ChatList({ chats = [], activeChatId, setActiveChatId, se
             No se encontraron conversaciones con los filtros seleccionados.
           </div>
         )}
+      </div>
+
+      {/* Botón Demo */}
+      <div className="px-4 py-3 border-t border-slate-100 bg-slate-50/80">
+        <button
+          onClick={handleLoadDemo}
+          disabled={demoState === 'loading'}
+          className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl text-xs font-bold transition-all ${
+            demoState === 'done'
+              ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+              : demoState === 'loading'
+              ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
+              : 'bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300'
+          }`}
+        >
+          {demoState === 'loading' && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+          {demoState === 'done'    && <CheckCircle2 className="h-3.5 w-3.5" />}
+          {demoState === 'idle'    && <FlaskConical className="h-3.5 w-3.5" />}
+          {demoState === 'loading' ? 'Cargando demo...' : demoState === 'done' ? '¡Demo cargada! ✓' : 'Cargar Conversación Demo'}
+        </button>
+        <p className="text-center text-[9px] text-slate-400 mt-1.5 font-medium">
+          Muestra el flujo completo: Bot IA → Modo Humano
+        </p>
       </div>
     </div>
   );
