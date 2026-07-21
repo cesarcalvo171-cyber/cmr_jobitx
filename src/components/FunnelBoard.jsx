@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UserPlus, Search, MessageSquare, DollarSign, TrendingUp, Clock, CheckCircle, AlertCircle, ChevronRight, X, Download } from 'lucide-react';
 import { exportToCsv } from '../lib/exportCsv';
+import { useCRMStore } from '../store/crmStore';
 
 const ETAPAS = ['Nuevo', 'En Proceso', 'Prestamo Programado', 'Prestamo Cerrado'];
 
@@ -36,6 +37,7 @@ const ETAPA_CONFIG = {
 };
 
 export default function FunnelBoard({ leads = [], onAddLead }) {
+  const { moveLead } = useCRMStore();
   const [search, setSearch] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [filterEtapa, setFilterEtapa] = useState('todas');
@@ -256,11 +258,19 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
                       </div>
                     </td>
 
-                    {/* Badge de Etapa */}
+                    {/* Selector de Etapa */}
                     <td className="py-4 px-6 text-center">
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold border w-max mx-auto ${cfg.color}`}>
-                        {lead.stage}
-                      </span>
+                      <select
+                        value={lead.stage}
+                        onChange={(e) => moveLead(lead.id, e.target.value)}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-extrabold border cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all ${cfg.color}`}
+                      >
+                        {ETAPAS.map(etapa => (
+                          <option key={etapa} value={etapa} className="bg-white text-slate-800 font-semibold text-xs">
+                            {ETAPA_CONFIG[etapa].label}
+                          </option>
+                        ))}
+                      </select>
                     </td>
 
                     {/* Monto del Prestamo */}
@@ -284,15 +294,17 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
                     <td className="py-4 px-6 text-center">
                       {nextStage ? (
                         <button
-                          onClick={() => onAddLead && null} // se manejara a traves de moveLead
-                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-[10px] font-extrabold transition-all border ${ETAPA_CONFIG[nextStage].color} hover:shadow-sm`}
-                          title={`Mover a: ${nextStage}`}
+                          onClick={() => moveLead(lead.id, nextStage)}
+                          className={`inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl text-[10px] font-extrabold transition-all border shadow-xs hover:scale-105 active:scale-95 ${ETAPA_CONFIG[nextStage].color}`}
+                          title={`Avanzar a: ${ETAPA_CONFIG[nextStage].label}`}
                         >
                           <ChevronRight className="h-3.5 w-3.5" />
-                          {nextStage}
+                          {ETAPA_CONFIG[nextStage].label}
                         </button>
                       ) : (
-                        <span className="text-[10px] font-bold text-emerald-600">Etapa Final</span>
+                        <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                          ✓ Desembolsado
+                        </span>
                       )}
                     </td>
 
