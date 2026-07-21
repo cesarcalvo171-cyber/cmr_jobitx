@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Search, Phone, Mail, ArrowLeft, Calendar,
   User2, Bot, UserCheck, MessageSquare, Tag,
-  FileText, Ban, Eye, X, Send, PlayCircle, Clock, Archive, TrendingUp, DollarSign, Download
+  FileText, Ban, Eye, X, Send, PlayCircle, Clock, Archive, TrendingUp, DollarSign, Download,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { useCRMStore } from '../store/crmStore';
 import { exportToCsv } from '../lib/exportCsv';
@@ -25,11 +26,24 @@ export default function Clientes({ clients = [] }) {
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
   const [leadForm, setLeadForm] = useState({ monto: '', reason: '', stage: 'Nuevo' });
 
+  // Paginación (10 clientes por página)
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Resetear a página 1 cuando cambia la búsqueda
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
+
   const filteredClients = clients.filter(
     (c) =>
       c.name.toLowerCase().includes(search.toLowerCase()) ||
       c.phone.includes(search)
   );
+
+  const totalPages = Math.ceil(filteredClients.length / itemsPerPage) || 1;
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedClients = filteredClients.slice(startIndex, startIndex + itemsPerPage);
 
   const selectedClient = clients.find((c) => c.id === selectedClientId) || null;
 
@@ -160,7 +174,7 @@ export default function Clientes({ clients = [] }) {
             </thead>
 
             <tbody>
-              {filteredClients.map((client) => {
+              {paginatedClients.map((client) => {
                 const matchingChat = chats.find(c => c.id === client.chatId || c.phone === client.phone);
                 const convStatus = matchingChat ? matchingChat.convStatus : client.convStatus || 'En Ejecución';
                 const isBotActive = matchingChat ? matchingChat.status === 'IA' : client.botEnabled;
@@ -232,6 +246,51 @@ export default function Clientes({ clients = [] }) {
             </tbody>
           </table>
         </div>
+
+        {/* PIE DE PÁGINA: PAGINACIÓN */}
+        {filteredClients.length > 0 && (
+          <div className="px-6 py-3.5 bg-slate-50/80 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+            <p className="text-xs font-semibold text-slate-500">
+              Mostrando <span className="font-extrabold text-slate-700">{filteredClients.length === 0 ? 0 : startIndex + 1}</span> a <span className="font-extrabold text-slate-700">{Math.min(startIndex + itemsPerPage, filteredClients.length)}</span> de <span className="font-extrabold text-slate-700">{filteredClients.length}</span> clientes
+            </p>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="flex items-center justify-center p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:hover:bg-white text-slate-600 transition-all shadow-xs"
+                title="Página Anterior"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+
+              <div className="flex items-center gap-1 px-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`h-8 w-8 rounded-xl text-xs font-extrabold transition-all ${
+                      currentPage === pageNum
+                        ? 'bg-emerald-600 text-white shadow-sm'
+                        : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="flex items-center justify-center p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:hover:bg-white text-slate-600 transition-all shadow-xs"
+                title="Página Siguiente"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* MODAL DETALLES DEL CLIENTE Y HITO DE CONVERSACIÓN */}
