@@ -59,8 +59,8 @@ export default function DashboardView({ chats = [], leads = [] }) {
     },
   ];
 
-  // Actividad Reciente
-  const recentActivity = chats.slice(0, 6).map(chat => ({
+  // Actividad Reciente (Limitado a los últimos 3)
+  const recentActivity = chats.slice(0, 3).map(chat => ({
     contact: chat.name,
     phone: chat.phone || 'N/A',
     message: chat.lastMessage,
@@ -242,15 +242,16 @@ export default function DashboardView({ chats = [], leads = [] }) {
       </div>
 
       {/* Tabla de Actividad Reciente */}
-      <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex-1 min-h-[300px]">
+      <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex-1 flex flex-col justify-between">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h3 className="text-lg font-black text-slate-800">Actividad Reciente en WhatsApp</h3>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">Últimas conversaciones recibidas en el CRM</p>
+            <p className="text-xs text-slate-500 font-medium mt-0.5">Últimas 3 conversaciones recibidas en el CRM</p>
           </div>
         </div>
         
-        <div className="overflow-x-auto">
+        {/* VISTA DESKTOP: TABLA (Pantallas md en adelante) */}
+        <div className="overflow-x-auto hidden md:block">
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="text-[10px] uppercase tracking-widest font-extrabold text-slate-400 border-b border-slate-100">
@@ -303,6 +304,55 @@ export default function DashboardView({ chats = [], leads = [] }) {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* VISTA MÓVIL: TARJETAS COMPACTAS (Pantallas pequeñas < md) */}
+        <div className="space-y-3 block md:hidden">
+          {recentActivity.map((act, i) => (
+            <div key={i} className="p-4 rounded-2xl bg-slate-50/80 border border-slate-100 flex flex-col gap-2.5">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2.5">
+                  <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center font-bold text-white text-xs shadow-xs shrink-0">
+                    {act.contact.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-800 text-xs">{act.contact}</p>
+                    <p className="text-[10px] text-slate-400 font-semibold">{act.phone}</p>
+                  </div>
+                </div>
+                <span className="text-[10px] text-slate-400 font-semibold">{act.time}</span>
+              </div>
+
+              <p className="text-xs text-slate-600 font-medium italic bg-white p-2.5 rounded-xl border border-slate-100 truncate">
+                "{act.message}"
+              </p>
+
+              <div className="flex justify-between items-center pt-1">
+                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-bold ${
+                  act.isBot ? 'bg-indigo-50 text-indigo-700 border border-indigo-100' : 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                }`}>
+                  {act.isBot ? <Bot className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
+                  {act.agent}
+                </span>
+
+                <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold border ${
+                  act.convStatus === 'En Ejecución' || act.convStatus === 'active'
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                    : act.convStatus === 'Pendiente' || act.convStatus === 'snoozed'
+                      ? 'bg-amber-50 text-amber-700 border-amber-200'
+                      : 'bg-slate-100 text-slate-600 border-slate-200'
+                }`}>
+                  {act.convStatus}
+                </span>
+              </div>
+            </div>
+          ))}
+
+          {recentActivity.length === 0 && (
+            <div className="text-center py-8 text-slate-400 font-medium text-xs">
+              Sin actividad reciente de WhatsApp.
+            </div>
+          )}
         </div>
       </div>
     </div>
