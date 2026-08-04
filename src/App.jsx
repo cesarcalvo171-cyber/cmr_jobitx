@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import Sidebar from './components/Sidebar';
 import ChatList from './components/ChatList';
 import ChatWindow from './components/ChatWindow';
 import Clientes from './components/Clientes';
@@ -28,7 +27,7 @@ function App() {
 
   const [profile, setProfile] = useState(null);
   const [userEmail, setUserEmail] = useState('');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Estados de Modales y Popovers de la Cabecera
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -37,6 +36,13 @@ function App() {
 
   const activeChat = chats.find(c => c.id === activeChatId);
   const unreadChats = chats.filter(c => c.unreadCount > 0);
+
+  const navigation = [
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'leads', label: 'Préstamos' },
+    { id: 'contacts', label: 'Clientes' },
+    { id: 'chats', label: 'Conversaciones' }
+  ];
 
   useEffect(() => {
     fetchChats();
@@ -87,7 +93,6 @@ function App() {
       case 'chats':
         return (
           <div className="flex-1 flex h-full overflow-hidden relative">
-           
             <div className={`flex-1 h-full ${!activeChatId ? 'hidden md:flex' : 'flex flex-col'}`}>
               {activeChatId && (
                 <button 
@@ -113,53 +118,49 @@ function App() {
   };
 
   const DashboardLayout = () => (
-    <div className="flex h-screen w-screen overflow-hidden font-sans relative" style={{ backgroundColor: 'var(--bg-base)' }}>
-      {/* Sidebar - Desktop */}
-      <div className="hidden lg:flex h-full shrink-0">
-        <Sidebar activeTab={activeTab || 'dashboard'} setActiveTab={setActiveTab} />
-      </div>
-
-      {/* Sidebar Drawer - Mobile */}
-      {isSidebarOpen && (
-        <div className="fixed inset-0 z-50 flex lg:hidden">
-          <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs" onClick={() => setIsSidebarOpen(false)}></div>
-          <div className="relative flex flex-col w-[250px] h-full bg-blue-950 animate-slide-in">
-            <button 
-              onClick={() => setIsSidebarOpen(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white"
-            >
-              <X className="h-5 w-5" />
-            </button>
-            <Sidebar 
-              activeTab={activeTab || 'dashboard'} 
-              setActiveTab={(tab) => {
-                setActiveTab(tab);
-                setIsSidebarOpen(false);
-              }}
-              isMobile={true}
-            />
-          </div>
-        </div>
-      )}
+    <div className="flex flex-col h-screen w-screen overflow-hidden font-sans relative" style={{ backgroundColor: 'var(--bg-base)' }}>
       
-      <div className="flex-1 flex flex-col h-full min-w-0">
-        {/* Top Header */}
-        <header className="h-20 bg-white   border-b border-slate-200 px-4 md:px-8 flex items-center justify-between shrink-0 relative z-30">
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => setIsSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition-colors"
-            >
-              <Menu className="h-6 w-6" />
-            </button>
-         
-           
-            <h1 className="font-black text-slate-800 text-lg md:text-xl tracking-tight font-outfit lg:hidden">
+      {/* Top Header Navbar */}
+      <header className="h-16 bg-white border-b border-slate-200 px-4 md:px-8 flex items-center justify-between shrink-0 relative z-40">
+        
+        {/* Izquierda: Logo y Menú Móvil */}
+        <div className="flex items-center gap-3 w-1/4">
+          <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition-colors"
+          >
+            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+          
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
+            <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center shrink-0 shadow-sm">
+              <span className="text-white font-black text-lg leading-none">K</span>
+            </div>
+            <h1 className="font-black text-slate-800 text-lg tracking-tight font-outfit hidden sm:block">
                Kyvorix
             </h1>
           </div>
-          
-          <div className="flex items-center gap-2 md:gap-4">
+        </div>
+
+        {/* Centro: Links de Navegación (Solo Desktop) */}
+        <nav className="hidden lg:flex items-center justify-center flex-1 gap-8 h-full">
+          {navigation.map(item => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`h-full px-2 text-sm font-bold transition-all border-b-2 ${
+                activeTab === item.id 
+                  ? 'border-blue-600 text-blue-700' 
+                  : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
+        
+        {/* Derecha: Acciones de Usuario */}
+        <div className="flex items-center justify-end gap-2 md:gap-4 w-1/4">
             
             {/* BOTÓN 1: NOTIFICACIONES */}
             <div className="relative">
@@ -278,11 +279,9 @@ function App() {
                 }}
                 className="flex items-center gap-2 md:gap-3 p-1.5 rounded-2xl hover:bg-slate-100 transition-colors text-left"
               >
-                <div className="text-right hidden sm:block">
-                  <p className="text-xs font-black text-slate-800 leading-tight">{profile?.full_name || 'Admin Manager'}</p>
-                  <p className="text-[9px] font-bold text-emerald-600">En línea</p>
-                </div>
-                <div className="h-9 w-9 rounded-2xl  flex items-center justify-center text-emerald-400 font-black  text-xs shrink-0">
+                
+
+                <div className="h-9 w-9 rounded-2xl  flex items-center justify-center text-blue-950 font-black  text-xs shrink-0">
                   <FaUserCircle className="h-5 w-5" />
                 </div>
               </button>
@@ -291,11 +290,9 @@ function App() {
               {isProfileOpen && (
                 <div className="absolute right-0 mt-3 w-64 bg-white rounded-3xl shadow-2xl border border-slate-100 p-4 z-50 animate-fadeInUp">
                   <div className="pb-3 border-b border-slate-100 mb-3">
-                    <p className="font-black text-slate-800 text-sm">{profile?.full_name || 'Admin Manager'}</p>
-                    <p className="text-xs font-semibold text-slate-400 truncate">{userEmail || 'admin@talosflow.local'}</p>
-                    <span className="inline-flex items-center gap-1 mt-2 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      <FaUserCircle className="h-3 w-3" /> Admin
-                    </span>
+                    <p className="font-black text-slate-800 text-sm">{profile?.full_name  }</p>
+                    <p className="text-xs font-semibold text-slate-400 truncate">{userEmail  }</p>
+                    
                   </div>
 
                   <button
@@ -310,6 +307,28 @@ function App() {
 
           </div>
         </header>
+
+        {/* Mobile Menu Dropdown */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex flex-col gap-1 z-30 shadow-xl absolute top-16 left-0 w-full animate-slide-in">
+            {navigation.map(item => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActiveTab(item.id);
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`p-3 text-left rounded-xl text-sm font-bold transition-colors ${
+                  activeTab === item.id 
+                    ? 'bg-blue-50 text-blue-700' 
+                    : 'text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Main Content Area */}
         <main className="flex-1 h-full min-w-0 flex flex-col overflow-hidden relative">
