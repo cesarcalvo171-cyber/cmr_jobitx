@@ -22,6 +22,7 @@ function App() {
     fetchChats, fetchClients, fetchLeads,
     sendMessage, toggleBotStatus,
     handleRealtimeMessage,
+    searchQuery, setSearchQuery,
     loading
   } = useCRMStore();
 
