@@ -46,13 +46,24 @@ export default function Sidebar({ activeTab, setActiveTab }) {
   return (
     <aside className={`flex flex-col h-full shrink-0 select-none shadow-xl z-20 bg-slate-900 transition-all duration-300 ease-in-out ${isCollapsed ? 'w-[80px]' : 'w-[250px]'}`}>
       
-      {/* Toggle Button at Top */}
-      <div className="p-4 border-b border-slate-800 flex items-center h-20 shrink-0">
+      {/* Logo & Toggle Button at Top */}
+      <div className={`p-4 border-b border-slate-800 flex items-center h-20 shrink-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+        
+        {/* Logo / Título (Se oculta si está contraído) */}
+        {!isCollapsed && (
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="h-8 w-8 bg-emerald-500 rounded-lg flex items-center justify-center shrink-0">
+              <span className="text-white font-black text-lg leading-none">K</span>
+            </div>
+            <span className="font-black text-white text-lg tracking-tight truncate">
+              Kyvorix
+            </span>
+          </div>
+        )}
+
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className={`w-full flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors ${
-            !isCollapsed && 'justify-end'
-          }`}
+          className="flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
           title={isCollapsed ? "Expandir" : "Contraer"}
         >
           {isCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
