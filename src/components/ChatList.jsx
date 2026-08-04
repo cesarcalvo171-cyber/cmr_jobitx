@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search, Bot, UserCheck } from 'lucide-react';
 import { useCRMStore } from '../store/crmStore';
 
-export default function ChatList({ chats = [], activeChatId, setActiveChatId, searchQuery, setSearchQuery }) {
+export default function ChatList({ chats = [], activeChatId, onSelectChat, searchQuery, onSearchChange }) {
   const [activeFilter, setActiveFilter] = useState('todos');
 
   // Filtrar por texto y por estado de conversación
@@ -29,7 +29,7 @@ export default function ChatList({ chats = [], activeChatId, setActiveChatId, se
             type="text"
             placeholder="Buscar chats o números..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => onSearchChange(e.target.value)}
             className="w-full pl-9 pr-4 py-2 text-xs bg-slate-100/80 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:outline-none text-slate-700 placeholder-slate-400 font-semibold"
           />
         </div>
@@ -81,7 +81,7 @@ export default function ChatList({ chats = [], activeChatId, setActiveChatId, se
           return (
             <div
               key={chat.id}
-              onClick={() => setActiveChatId(chat.id)}
+              onClick={() => onSelectChat(chat.id)}
               className={`flex items-start gap-3 p-4 cursor-pointer transition-all border-b border-slate-50 relative ${
                 isSelected ? 'bg-emerald-50/50' : 'hover:bg-slate-50'
               }`}
