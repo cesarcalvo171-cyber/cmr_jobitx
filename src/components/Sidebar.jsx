@@ -1,14 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { 
   LayoutDashboard, 
   Target, 
   Contact, 
   MessageSquare, 
-  Settings
+  Settings,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 export default function Sidebar({ activeTab, setActiveTab }) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   const navigation = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'leads', label: 'Préstamos', icon: Target },
@@ -24,36 +28,41 @@ export default function Sidebar({ activeTab, setActiveTab }) {
       <button
         key={item.id}
         onClick={() => setActiveTab(item.id)}
-        className={`w-full flex items-center px-6 py-3.5 my-1 text-sm font-bold transition-all duration-200 group ${
+        title={isCollapsed ? item.label : undefined}
+        className={`w-full flex items-center py-3.5 my-1 text-sm font-bold transition-all duration-200 group ${
+          isCollapsed ? 'justify-center px-0' : 'px-6'
+        } ${
           isActive 
             ? 'bg-emerald-600 text-white border-l-4 border-emerald-400 shadow-sm' 
             : 'text-slate-300 hover:bg-slate-700/50 hover:text-white border-l-4 border-transparent'
         }`}
       >
-        <Icon className={`mr-4 h-5 w-5 shrink-0 transition-colors ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}`} />
-        <span>{item.label}</span>
+        <Icon className={`h-5 w-5 shrink-0 transition-colors ${!isCollapsed && 'mr-4'} ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}`} />
+        {!isCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
       </button>
     );
   };
 
   return (
-    <aside className="w-[250px] flex flex-col h-full shrink-0 select-none shadow-xl z-20 bg-slate-900">
+    <aside className={`flex flex-col h-full shrink-0 select-none shadow-xl z-20 bg-slate-900 transition-all duration-300 ease-in-out ${isCollapsed ? 'w-[80px]' : 'w-[250px]'}`}>
       
-      {/* Brand Header */}
-      <div className="px-6 py-8 flex flex-col">
-        <h1 className="font-black text-emerald-400 text-2xl tracking-tight font-outfit flex items-center gap-2">
-          Kyvorix
-        </h1>
-        <p className="text-[10px] font-extrabold uppercase text-emerald-400 tracking-widest mt-1">
-          
-        </p>
-      </div>
-
       {/* Navigation */}
-      <div className="flex-1 overflow-y-auto py-2">
-        <div>{navigation.map(renderLink)}</div>
+      <div className="flex-1 overflow-y-auto py-4">
+        <div className="space-y-1">{navigation.map(renderLink)}</div>
       </div>
       
+      {/* Toggle Button at Bottom */}
+      <div className="p-4 border-t border-slate-800">
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className={`w-full flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors ${
+            !isCollapsed && 'justify-end'
+          }`}
+          title={isCollapsed ? "Expandir" : "Contraer"}
+        >
+          {isCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
+        </button>
+      </div>
     </aside>
   );
 }
