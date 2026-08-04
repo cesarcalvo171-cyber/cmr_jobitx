@@ -7,7 +7,8 @@ export default function ChatList({ chats = [], activeChatId, onSelectChat, searc
 
   // Filtrar por texto y por estado de conversación
   const filteredChats = chats.filter(chat => {
-    const matchesSearch = chat.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const safeName = chat.name || 'Contacto Sin Nombre';
+    const matchesSearch = safeName.toLowerCase().includes((searchQuery || '').toLowerCase()) || 
                           (chat.phone && chat.phone.includes(searchQuery));
     if (!matchesSearch) return false;
 
