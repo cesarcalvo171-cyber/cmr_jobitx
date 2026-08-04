@@ -6,12 +6,12 @@ import Clientes from './components/Clientes';
 import FunnelBoard from './components/FunnelBoard';
 import DashboardView from './components/DashboardView';
 import PromptConfig from './components/PromptConfig';
-import { Search, Bell, HelpCircle, Menu, X, ArrowLeft, LogOut, ShieldCheck, CheckCheck, MessageSquare, Info, BookOpen } from 'lucide-react';
-
+import {  Bell, HelpCircle, Menu, X, ArrowLeft, LogOut, MessageSquare,  BookOpen } from 'lucide-react';
+import { FaUserCircle } from "react-icons/fa"; 
 import { useCRMStore } from './store/crmStore';
 import { supabase } from './lib/supabase';
 
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate} from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 
@@ -20,7 +20,6 @@ function App() {
     activeTab, setActiveTab,
     chats, clients, leads,
     activeChatId, setActiveChatId,
-    searchQuery, setSearchQuery,
     fetchChats, fetchClients, fetchLeads,
     sendMessage, toggleBotStatus,
     handleRealtimeMessage,
@@ -88,12 +87,7 @@ function App() {
       case 'chats':
         return (
           <div className="flex-1 flex h-full overflow-hidden relative">
-            <div className={`w-full md:w-[320px] shrink-0 h-full border-r border-slate-200 ${activeChatId ? 'hidden md:flex' : 'flex'}`}>
-              <ChatList 
-                chats={chats} activeChatId={activeChatId} setActiveChatId={setActiveChatId}
-                searchQuery={searchQuery} setSearchQuery={setSearchQuery}
-              />
-            </div>
+           
             <div className={`flex-1 h-full ${!activeChatId ? 'hidden md:flex' : 'flex flex-col'}`}>
               {activeChatId && (
                 <button 
@@ -157,17 +151,9 @@ function App() {
             >
               <Menu className="h-6 w-6" />
             </button>
-            <div className="w-[200px] md:w-[360px] relative hidden sm:block">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <input 
-                type="text" 
-                placeholder="Buscar prospecto o cliente..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-100/80 border-none rounded-full py-2.5 pl-11 pr-4 text-xs font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none text-slate-700 placeholder-slate-400"
-              />
-            </div>
-            <h1 className="lg:hidden font-black text-slate-800 text-lg tracking-tight font-outfit sm:hidden">
+         
+           
+            <h1 className="font-black text-slate-800 text-lg md:text-2xl lg:text-4xl tracking-tight font-outfit">
                Kyvorax
             </h1>
           </div>
@@ -274,6 +260,7 @@ function App() {
                       <p>Descarga tus prospectos y clientes en CSV compatible con Microsoft Excel usando el botón **Exportar Excel**.</p>
                     </div>
                   </div>
+                  
                 </div>
               )}
             </div>
@@ -294,8 +281,8 @@ function App() {
                   <p className="text-xs font-black text-slate-800 leading-tight">{profile?.full_name || 'Admin Manager'}</p>
                   <p className="text-[9px] font-bold text-emerald-600">En línea</p>
                 </div>
-                <div className="h-9 w-9 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-black shadow-sm text-xs shrink-0">
-                  {(profile?.full_name || 'A M').split(' ').map(n=>n[0]).join('')}
+                <div className="h-9 w-9 rounded-2xl  flex items-center justify-center text-emerald-400 font-black  text-xs shrink-0">
+                  <FaUserCircle className="h-5 w-5" />
                 </div>
               </button>
 
@@ -306,7 +293,7 @@ function App() {
                     <p className="font-black text-slate-800 text-sm">{profile?.full_name || 'Admin Manager'}</p>
                     <p className="text-xs font-semibold text-slate-400 truncate">{userEmail || 'admin@talosflow.local'}</p>
                     <span className="inline-flex items-center gap-1 mt-2 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      <ShieldCheck className="h-3 w-3" /> Administrador CRM
+                      <FaUserCircle className="h-3 w-3" /> Admin
                     </span>
                   </div>
 

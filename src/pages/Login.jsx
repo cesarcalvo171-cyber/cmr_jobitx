@@ -100,7 +100,7 @@ export default function Login() {
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
                 <>
-                  Ingresar al Workspace <ArrowRight className="h-4 w-4" />
+                  Ingresar <ArrowRight className="h-4 w-4" />
                 </>
               )}
             </button>
