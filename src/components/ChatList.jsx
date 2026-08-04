@@ -23,51 +23,43 @@ export default function ChatList({ chats = [], activeChatId, onSelectChat, searc
     <div className="w-[320px] flex flex-col h-full shrink-0 select-none bg-white border-r border-slate-200 z-10 relative">
       
       {/* Search Header */}
-      <div className="px-5 pt-6 pb-4 border-b border-slate-100">
-        <div className="relative mb-3">
+      <div className="px-5 pt-6 pb-2 border-b border-slate-100">
+        <div className="relative mb-4">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <input
             type="text"
             placeholder="Buscar chats o números..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-xs bg-slate-100/80 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:outline-none text-slate-700 placeholder-slate-400 font-semibold"
+            className="w-full pl-9 pr-4 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:border-slate-300 focus:ring-0 focus:outline-none text-slate-700 placeholder-slate-400 font-medium transition-colors"
           />
         </div>
 
-        {/* Filter Badges */}
-        <div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+        {/* Filter Tabs */}
+        <div className="flex gap-4 overflow-x-auto no-scrollbar border-b border-slate-100">
           <button
             onClick={() => setActiveFilter('todos')}
-            className={`px-3 py-1 text-[10px] font-bold rounded-full transition-all shrink-0 ${
-              activeFilter === 'todos' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+            className={`pb-3 text-xs font-bold transition-all border-b-2 shrink-0 ${
+              activeFilter === 'todos' ? 'border-slate-800 text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'
             }`}
           >
             Todos ({chats.length})
           </button>
           <button
             onClick={() => setActiveFilter('ejecucion')}
-            className={`px-3 py-1 text-[10px] font-bold rounded-full transition-all shrink-0 ${
-              activeFilter === 'ejecucion' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+            className={`pb-3 text-xs font-bold transition-all border-b-2 shrink-0 ${
+              activeFilter === 'ejecucion' ? 'border-slate-800 text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'
             }`}
           >
-            Ejecución
+            Activos
           </button>
           <button
             onClick={() => setActiveFilter('pendientes')}
-            className={`px-3 py-1 text-[10px] font-bold rounded-full transition-all shrink-0 ${
-              activeFilter === 'pendientes' ? 'bg-amber-600 text-white' : 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+            className={`pb-3 text-xs font-bold transition-all border-b-2 shrink-0 ${
+              activeFilter === 'pendientes' ? 'border-slate-800 text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'
             }`}
           >
-            Pendientes
-          </button>
-          <button
-            onClick={() => setActiveFilter('cerrados')}
-            className={`px-3 py-1 text-[10px] font-bold rounded-full transition-all shrink-0 ${
-              activeFilter === 'cerrados' ? 'bg-slate-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            Cerrados
+            Espera
           </button>
         </div>
       </div>
@@ -78,60 +70,54 @@ export default function ChatList({ chats = [], activeChatId, onSelectChat, searc
           const isSelected = activeChatId === chat.id;
           const isBot = chat.status === 'IA';
           const convStatus = chat.convStatus || 'En Ejecución';
+          const isActive = convStatus === 'En Ejecución' || convStatus === 'active';
 
           return (
             <div
               key={chat.id}
               onClick={() => onSelectChat(chat.id)}
               className={`flex items-start gap-3 p-4 cursor-pointer transition-all border-b border-slate-50 relative ${
-                isSelected ? 'bg-emerald-50/50' : 'hover:bg-slate-50'
+                isSelected ? 'bg-slate-50' : 'hover:bg-slate-50/50'
               }`}
             >
-              {isSelected && <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-500 rounded-r-full"></div>}
+              {isSelected && <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600"></div>}
               
               <div className="relative">
-                <div className={`h-11 w-11 rounded-2xl flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden text-white shadow-xs ${
-                  isBot ? 'bg-gradient-to-br from-indigo-500 to-purple-600' : 'bg-gradient-to-br from-emerald-500 to-teal-600'
-                }`}>
+                <div className="h-11 w-11 rounded-full flex items-center justify-center font-bold text-sm shrink-0 bg-slate-100 text-slate-700">
                   {chat.name ? chat.name.substring(0, 2).toUpperCase() : '??'}
                 </div>
                 {chat.unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[9px] font-extrabold rounded-full bg-emerald-500 text-white shadow-xs">
+                  <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[9px] font-bold rounded-full bg-blue-600 text-white border-2 border-white">
                     {chat.unreadCount}
                   </span>
                 )}
               </div>
 
               <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-center mb-1">
-                  <h4 className="text-xs font-extrabold text-slate-800 truncate">{chat.name}</h4>
-                  <span className="text-[9px] font-semibold text-slate-400">{chat.timestamp}</span>
+                <div className="flex justify-between items-center mb-0.5">
+                  <h4 className={`text-sm truncate ${isSelected ? 'font-bold text-slate-900' : 'font-semibold text-slate-800'}`}>{chat.name}</h4>
+                  <span className={`text-[10px] ${chat.unreadCount > 0 ? 'font-bold text-blue-600' : 'font-medium text-slate-400'}`}>{chat.timestamp}</span>
                 </div>
                 
-                <p className={`text-xs truncate mb-2 ${isSelected ? 'text-slate-700 font-semibold' : 'text-slate-500 font-medium'}`}>
+                <p className={`text-xs truncate mb-2 ${isSelected || chat.unreadCount > 0 ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>
                   {chat.lastMessage}
                 </p>
 
-                {/* Badges de Estado */}
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  {/* Badge Estado Conversación */}
-                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold border ${
-                    convStatus === 'En Ejecución' || convStatus === 'active'
-                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                      : convStatus === 'Pendiente' || convStatus === 'snoozed'
-                        ? 'bg-amber-50 text-amber-700 border-amber-200'
-                        : 'bg-slate-100 text-slate-600 border-slate-200'
-                  }`}>
-                    {convStatus}
-                  </span>
+                {/* Minimal Badges */}
+                <div className="flex items-center gap-3">
+                  {/* Status Dot */}
+                  <div className="flex items-center gap-1.5">
+                    <span className={`h-1.5 w-1.5 rounded-full ${
+                      isActive ? 'bg-emerald-500' : 'bg-amber-500'
+                    }`}></span>
+                    <span className="text-[10px] font-medium text-slate-500">{convStatus}</span>
+                  </div>
 
-                  {/* Badge Modo Bot */}
-                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold border flex items-center gap-1 ${
-                    isBot ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                  }`}>
-                    {isBot ? <Bot className="h-2.5 w-2.5" /> : <UserCheck className="h-2.5 w-2.5" />}
-                    {isBot ? 'IA' : 'Humano'}
-                  </span>
+                  {/* Mode */}
+                  <div className="flex items-center gap-1 text-[10px] font-medium text-slate-500">
+                    {isBot ? <Bot className="h-3 w-3 text-slate-400" /> : <UserCheck className="h-3 w-3 text-slate-400" />}
+                    <span>{isBot ? 'Bot' : 'Agente'}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -139,8 +125,8 @@ export default function ChatList({ chats = [], activeChatId, onSelectChat, searc
         })}
 
         {filteredChats.length === 0 && (
-          <div className="text-center py-12 px-4 text-slate-400 font-medium text-xs">
-            No se encontraron conversaciones con los filtros seleccionados.
+          <div className="text-center py-12 px-4 text-slate-400 text-xs">
+            No se encontraron conversaciones.
           </div>
         )}
       </div>
