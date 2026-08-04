@@ -343,7 +343,6 @@ function App() {
         <footer className="h-10 shrink-0  bg-white border-t border-slate-200 px-4 md:px-8 flex items-center justify-center text-[12px] font-bold text-slate-900">
           &copy; created by Jobitx
         </footer>
-      </div>
     </div>
   );
      
