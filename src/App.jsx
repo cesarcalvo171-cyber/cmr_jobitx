@@ -123,7 +123,7 @@ function App() {
       {isSidebarOpen && (
         <div className="fixed inset-0 z-50 flex lg:hidden">
           <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs" onClick={() => setIsSidebarOpen(false)}></div>
-          <div className="relative flex flex-col w-[250px] h-full bg-slate-900 animate-slide-in">
+          <div className="relative flex flex-col w-[250px] h-full bg-blue-950 animate-slide-in">
             <button 
               onClick={() => setIsSidebarOpen(false)}
               className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white"
@@ -135,7 +135,8 @@ function App() {
               setActiveTab={(tab) => {
                 setActiveTab(tab);
                 setIsSidebarOpen(false);
-              }} 
+              }}
+              isMobile={true}
             />
           </div>
         </div>
@@ -153,8 +154,8 @@ function App() {
             </button>
          
            
-            <h1 className="font-black text-slate-800 text-lg md:text-2xl lg:text-4xl tracking-tight font-outfit">
-               Kyvorax
+            <h1 className="font-black text-slate-800 text-lg md:text-xl tracking-tight font-outfit lg:hidden">
+               Kyvorix
             </h1>
           </div>
           
@@ -168,7 +169,7 @@ function App() {
                   setIsHelpOpen(false);
                   setIsProfileOpen(false);
                 }}
-                className="text-slate-500 hover:text-slate-800 p-2 rounded-2xl hover:bg-slate-100 transition-colors relative"
+                className="text-slate-900  p-2 rounded-2xl  transition-colors relative"
                 title="Notificaciones"
               >
                 <Bell className="h-5 w-5" />
@@ -320,7 +321,7 @@ function App() {
           )}
           {renderMainContent()}
         </main>
-        <footer className="h-10 shrink-0  bg-slate-900 border-t border-slate-200 px-4 md:px-8 flex items-center justify-center text-[12px] font-bold text-white">
+        <footer className="h-10 shrink-0  bg-white border-t border-slate-200 px-4 md:px-8 flex items-center justify-center text-[12px] font-bold text-slate-900">
           &copy; created by Jobitx
         </footer>
       </div>

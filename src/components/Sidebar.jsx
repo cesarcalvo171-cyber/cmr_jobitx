@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-export default function Sidebar({ activeTab, setActiveTab }) {
+export default function Sidebar({ activeTab, setActiveTab, isMobile }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const navigation = [
@@ -28,46 +28,47 @@ export default function Sidebar({ activeTab, setActiveTab }) {
       <button
         key={item.id}
         onClick={() => setActiveTab(item.id)}
-        title={isCollapsed ? item.label : undefined}
+        title={isCollapsed && !isMobile ? item.label : undefined}
         className={`w-full flex items-center py-3.5 my-1 text-sm font-bold transition-all duration-200 group ${
-          isCollapsed ? 'justify-center px-0' : 'px-6'
+          isCollapsed && !isMobile ? 'justify-center px-0' : 'px-6'
         } ${
           isActive 
             ? 'bg-emerald-600 text-white border-l-4 border-emerald-400 shadow-sm' 
-            : 'text-slate-300 hover:bg-slate-700/50 hover:text-white border-l-4 border-transparent'
+            : 'text-slate-300 hover:bg-blue-900/50 hover:text-white border-l-4 border-transparent'
         }`}
       >
-        <Icon className={`h-5 w-5 shrink-0 transition-colors ${!isCollapsed && 'mr-4'} ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}`} />
-        {!isCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
+        <Icon className={`h-5 w-5 shrink-0 transition-colors ${!(isCollapsed && !isMobile) && 'mr-4'} ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}`} />
+        {!(isCollapsed && !isMobile) && <span className="whitespace-nowrap">{item.label}</span>}
       </button>
     );
   };
 
   return (
-    <aside className={`flex flex-col h-full shrink-0 select-none shadow-xl z-20 bg-slate-900 transition-all duration-300 ease-in-out ${isCollapsed ? 'w-[80px]' : 'w-[250px]'}`}>
+    <aside className={`flex flex-col h-full shrink-0 select-none shadow-xl z-20 bg-blue-950 transition-all duration-300 ease-in-out ${isCollapsed && !isMobile ? 'w-[80px]' : 'w-[250px]'}`}>
       
       {/* Logo & Toggle Button at Top */}
-      <div className={`p-4 border-b border-slate-800 flex items-center h-20 shrink-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+      <div className={`p-4 border-b border-slate-800 flex items-center h-20 shrink-0 ${isCollapsed && !isMobile ? 'justify-center' : 'justify-between'}`}>
         
         {/* Logo / Título (Se oculta si está contraído) */}
-        {!isCollapsed && (
+        {!(isCollapsed && !isMobile) && (
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="h-8 w-8 bg-emerald-500 rounded-lg flex items-center justify-center shrink-0">
-              <span className="text-white font-black text-lg leading-none">K</span>
-            </div>
+           
             <span className="font-black text-white text-lg tracking-tight truncate">
               Kyvorix
             </span>
           </div>
         )}
 
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
-          title={isCollapsed ? "Expandir" : "Contraer"}
-        >
-          {isCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
-        </button>
+        {/* El botón de colapsar solo se muestra en Desktop */}
+        {!isMobile && (
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
+            title={isCollapsed ? "Expandir" : "Contraer"}
+          >
+            {isCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
