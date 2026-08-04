@@ -75,7 +75,7 @@ export default function DashboardView({ chats = [], leads = [] }) {
       {/* Encabezado */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-2">
         <div>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight font-outfit">Panel de Control CRM</h1>
+          <h1 className="text-3xl font-black text-slate-800 tracking-tight font-outfit">Panel de Control Kyvorix </h1>
           <p className="text-sm text-slate-500 font-medium mt-1">Resumen general de rendimiento, conversaciones y embudo de ventas.</p>
         </div>
       </div>

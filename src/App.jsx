@@ -149,7 +149,7 @@ function App() {
       
       <div className="flex-1 flex flex-col h-full min-w-0">
         {/* Top Header */}
-        <header className="h-20 bg-white border-b border-slate-200 px-4 md:px-8 flex items-center justify-between shrink-0 relative z-30">
+        <header className="h-20 bg-white   border-b border-slate-200 px-4 md:px-8 flex items-center justify-between shrink-0 relative z-30">
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setIsSidebarOpen(true)}
@@ -168,7 +168,7 @@ function App() {
               />
             </div>
             <h1 className="lg:hidden font-black text-slate-800 text-lg tracking-tight font-outfit sm:hidden">
-              Jobitx CRM
+               Kyvorax
             </h1>
           </div>
           
@@ -260,17 +260,17 @@ function App() {
 
                   <div className="space-y-3 text-xs text-slate-600">
                     <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                      <p className="font-bold text-slate-800 mb-1">💼 Préstamos y Prospectos</p>
+                      <p className="font-bold text-slate-800 mb-1"> Préstamos y Prospectos</p>
                       <p>Registra montos solicitados y mueve los prospectos a través del pipeline (*Nuevo → En Proceso → Programado → Cerrado*).</p>
                     </div>
 
                     <div className="p-3 bg-indigo-50/60 rounded-2xl border border-indigo-100 text-indigo-900">
-                      <p className="font-bold mb-1">🤖 Control del Bot de IA</p>
+                      <p className="font-bold mb-1"> Control del Bot de IA</p>
                       <p>Cambia entre **Modo IA** (respuesta automática) y **Modo Humano** (control manual del asesor) directamente desde la cabecera de cada chat.</p>
                     </div>
 
                     <div className="p-3 bg-emerald-50/60 rounded-2xl border border-emerald-100 text-emerald-900">
-                      <p className="font-bold mb-1">📊 Exportación a Excel</p>
+                      <p className="font-bold mb-1"> Exportación a Excel</p>
                       <p>Descarga tus prospectos y clientes en CSV compatible con Microsoft Excel usando el botón **Exportar Excel**.</p>
                     </div>
                   </div>
@@ -333,9 +333,15 @@ function App() {
           )}
           {renderMainContent()}
         </main>
+        <footer className="h-10 shrink-0  bg-slate-900 border-t border-slate-200 px-4 md:px-8 flex items-center justify-center text-[12px] font-bold text-white">
+          &copy; created by Jobitx
+        </footer>
       </div>
     </div>
   );
+     
+ 
+    
 
   return (
     <Routes>

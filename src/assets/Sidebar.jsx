@@ -42,7 +42,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
       {/* Brand Header */}
       <div className="px-6 py-8 flex flex-col">
         <h1 className="font-black text-emerald-400 text-2xl tracking-tight font-outfit flex items-center gap-2">
-          Kyvorix
+          Kyvorax
         </h1>
         <p className="text-[10px] font-extrabold uppercase text-emerald-400 tracking-widest mt-1">
           

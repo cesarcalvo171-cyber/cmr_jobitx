@@ -45,8 +45,8 @@ export default function Login() {
             <div className="h-16 w-16 bg-linear-to-br from-emerald-400 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg mb-4">
               <MessageSquare className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Jobitx CRM</h1>
-            <p className="text-slate-400 text-sm mt-2">Inicia sesión en tu espacio de trabajo</p>
+            <h1 className="text-2xl font-bold text-white tracking-tight">Kyvorix</h1>
+           
           </div>
 
           <form onSubmit={handleLogin} className="space-y-5">
@@ -108,7 +108,7 @@ export default function Login() {
 
         </div>
         <p className="text-center text-slate-500 text-xs mt-6">
-          Desarrollado por TalosFlow © {new Date().getFullYear()}
+          &copy; created by Jobitx {new Date().getFullYear()}
         </p>
       </div>
     </div>

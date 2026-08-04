@@ -229,6 +229,7 @@ export default function ChatWindow({ chat, onSendMessage, onToggleStatus }) {
           <p className="text-xs text-slate-400 font-semibold mt-0.5">{chat.phone}</p>
         </div>
 
+
         {/* Detalles */}
         <div className="flex-1 p-5 space-y-6">
 
