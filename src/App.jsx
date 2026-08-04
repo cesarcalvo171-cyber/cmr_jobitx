@@ -93,16 +93,28 @@ function App() {
       case 'chats':
         return (
           <div className="flex-1 flex h-full overflow-hidden relative">
-            <div className={`flex-1 h-full ${!activeChatId ? 'hidden md:flex' : 'flex flex-col'}`}>
+            {/* ChatList (Hidden on mobile if a chat is active) */}
+            <div className={`w-full md:w-80 h-full shrink-0 border-r border-slate-200 ${activeChatId ? 'hidden md:block' : 'block'}`}>
+              <ChatList 
+                chats={chats}
+                activeChatId={activeChatId}
+                onSelectChat={setActiveChatId}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+              />
+            </div>
+            
+            {/* ChatWindow (Hidden on mobile if NO chat is active) */}
+            <div className={`flex-1 h-full min-w-0 ${!activeChatId ? 'hidden md:flex' : 'flex flex-col'}`}>
               {activeChatId && (
                 <button 
                   onClick={() => setActiveChatId(null)}
-                  className="md:hidden flex items-center gap-1.5 p-4 border-b border-slate-100 bg-white text-slate-600 font-bold text-xs text-left"
+                  className="md:hidden flex items-center gap-1.5 p-4 border-b border-slate-100 bg-white text-slate-600 font-bold text-xs text-left shrink-0"
                 >
                   <ArrowLeft className="h-4 w-4" /> Volver a la lista
                 </button>
               )}
-              <ChatWindow chat={activeChat} onSendMessage={handleSendMessage} onToggleStatus={handleToggleStatus} />
+              <ChatWindow chat={activeChat} onSendMessage={sendMessage} onToggleStatus={toggleBotStatus} />
             </div>
           </div>
         );
@@ -133,10 +145,8 @@ function App() {
           </button>
           
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
-            <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center shrink-0 shadow-sm">
-              <span className="text-white font-black text-lg leading-none">K</span>
-            </div>
-            <h1 className="font-black text-slate-800 text-lg tracking-tight font-outfit hidden sm:block">
+           
+            <h1 className="font-black text-black text-lg tracking-tight font-outfit hidden sm:block">
                Kyvorix
             </h1>
           </div>
@@ -150,7 +160,7 @@ function App() {
               onClick={() => setActiveTab(item.id)}
               className={`h-full px-2 text-sm font-bold transition-all border-b-2 ${
                 activeTab === item.id 
-                  ? 'border-blue-600 text-blue-700' 
+                  ? 'border-black text-slate-950' 
                   : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
               }`}
             >
