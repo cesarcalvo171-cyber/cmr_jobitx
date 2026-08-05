@@ -16,23 +16,23 @@ const ETAPA_CONFIG = {
   'En Proceso': {
     label: 'En Proceso',
     desc: 'Evaluando documentos y condiciones',
-    color: 'bg-amber-50 text-amber-700 border-amber-200',
+    color: 'bg-slate-50 text-slate-700 border-slate-200',
     dot: 'bg-amber-400',
     bar: 'bg-amber-400'
   },
   'Prestamo Programado': {
     label: 'Prestamo Programado',
     desc: 'Monto acordado, pendiente de desembolso',
-    color: 'bg-blue-50 text-blue-700 border-blue-200',
-    dot: 'bg-blue-500',
-    bar: 'bg-blue-500'
+    color: 'bg-slate-50 text-slate-700 border-slate-200',
+    dot: 'bg-slate-500',
+    bar: 'bg-slate-500'
   },
   'Prestamo Cerrado': {
     label: 'Prestamo Cerrado',
     desc: 'Dinero entregado, prestamo activo',
-    color: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    dot: 'bg-emerald-500',
-    bar: 'bg-emerald-500'
+    color: 'bg-slate-50 text-blue-800 border-slate-200',
+    dot: 'bg-blue-600',
+    bar: 'bg-blue-600'
   }
 };
 
@@ -122,7 +122,7 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
           </button>
           <button
             onClick={() => setIsFormOpen(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-sm font-bold shadow-md shadow-emerald-600/20 transition-all shrink-0"
+            className="flex items-center gap-2 px-5 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-2xl text-sm font-bold shadow-md shadow-blue-700/20 transition-all shrink-0"
           >
             <UserPlus className="h-4 w-4" />
             Nuevo Prospecto
@@ -143,7 +143,7 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
         </div>
 
         <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex flex-col">
-          <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600 w-fit mb-3">
+          <div className="p-2.5 rounded-xl bg-slate-50 text-blue-600 w-fit mb-3">
             <Clock className="h-5 w-5" />
           </div>
           <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">PRESTAMOS PROG.</p>
@@ -152,20 +152,20 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
         </div>
 
         <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex flex-col">
-          <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 w-fit mb-3">
+          <div className="p-2.5 rounded-xl bg-slate-50 text-slate-700 w-fit mb-3">
             <CheckCircle className="h-5 w-5" />
           </div>
           <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">PRESTAMOS CERRADOS</p>
           <h3 className="text-3xl font-black text-slate-800">{prestamosCerrados}</h3>
-          <p className="text-xs text-emerald-600 font-semibold mt-1">Dinero ya desembolsado</p>
+          <p className="text-xs text-slate-700 font-semibold mt-1">Dinero ya desembolsado</p>
         </div>
 
         <div className="bg-white rounded-3xl p-5 shadow-sm border border-indigo-100 flex flex-col">
-          <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 w-fit mb-3">
+          <div className="p-2.5 rounded-xl bg-slate-50 text-indigo-600 w-fit mb-3">
             <DollarSign className="h-5 w-5" />
           </div>
           <p className="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest mb-1">CAPITAL COLOCADO</p>
-          <h3 className="text-2xl font-black text-indigo-700">{formatMonto(montoTotalColocado)}</h3>
+          <h3 className="text-2xl font-black text-slate-700">{formatMonto(montoTotalColocado)}</h3>
           <p className="text-xs text-indigo-400 font-semibold mt-1">Pipeline: {formatMonto(montoPipeline)}</p>
         </div>
 
@@ -184,7 +184,7 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
               placeholder="Buscar por nombre o telefono..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-2xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-700 bg-slate-50"
+              className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-2xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600 text-slate-700 bg-slate-50"
             />
           </div>
 
@@ -253,7 +253,7 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
                     {/* Telefono */}
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-1.5 text-slate-700 font-semibold text-xs">
-                        <MessageSquare className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                        <MessageSquare className="h-3.5 w-3.5 text-blue-600 shrink-0" />
                         {lead.phone || 'Sin telefono'}
                       </div>
                     </td>
@@ -263,7 +263,7 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
                       <select
                         value={lead.stage}
                         onChange={(e) => moveLead(lead.id, e.target.value)}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-extrabold border cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all ${cfg.color}`}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-extrabold border cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all ${cfg.color}`}
                       >
                         {ETAPAS.map(etapa => (
                           <option key={etapa} value={etapa} className="bg-white text-slate-800 font-semibold text-xs">
@@ -302,7 +302,7 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
                           {ETAPA_CONFIG[nextStage].label}
                         </button>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-slate-700 bg-slate-50 px-3 py-1 rounded-full border border-slate-200">
                           ✓ Desembolsado
                         </span>
                       )}
@@ -348,7 +348,7 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   placeholder="ej. Juan Perez"
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-700 font-semibold"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 text-slate-700 font-semibold"
                   required
                 />
               </div>
@@ -360,7 +360,7 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                   placeholder="ej. +50558517405"
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-700 font-semibold"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 text-slate-700 font-semibold"
                   required
                 />
               </div>
@@ -371,7 +371,7 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
                   <select
                     value={form.stage}
                     onChange={(e) => setForm({ ...form, stage: e.target.value })}
-                    className="w-full px-3 py-2.5 border border-slate-200 rounded-2xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-700"
+                    className="w-full px-3 py-2.5 border border-slate-200 rounded-2xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-600 text-slate-700"
                   >
                     {ETAPAS.map(e => (
                       <option key={e} value={e}>{e}</option>
@@ -388,7 +388,7 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
                       onChange={(e) => setForm({ ...form, monto: e.target.value })}
                       placeholder="ej. 2000"
                       min="0"
-                      className="w-full pl-7 pr-3 py-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-700 font-bold"
+                      className="w-full pl-7 pr-3 py-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 text-slate-700 font-bold"
                     />
                   </div>
                 </div>
@@ -401,7 +401,7 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
                   onChange={(e) => setForm({ ...form, reason: e.target.value })}
                   placeholder="ej. Cliente solicito prestamo para capital de trabajo, acordado en chat el 15-Jul"
                   rows={3}
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-700 font-medium resize-none"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 text-slate-700 font-medium resize-none"
                 />
               </div>
 
@@ -415,7 +415,7 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold text-sm transition-all shadow-md shadow-emerald-600/20"
+                  className="flex-1 py-3 bg-blue-700 hover:bg-blue-800 text-white rounded-2xl font-bold text-sm transition-all shadow-md shadow-blue-700/20"
                 >
                   Registrar Prestamo
                 </button>

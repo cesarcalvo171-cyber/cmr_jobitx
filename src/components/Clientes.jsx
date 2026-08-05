@@ -154,7 +154,7 @@ export default function Clientes({ clients = [] }) {
               placeholder="Buscar por nombre o teléfono..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-11 pl-11 pr-4 rounded-2xl border border-slate-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"
+              className="w-full h-11 pl-11 pr-4 rounded-2xl border border-slate-200 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-sm"
             />
           </div>
         </div>
@@ -187,7 +187,7 @@ export default function Clientes({ clients = [] }) {
                     {/* CLIENTE */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center font-bold text-white shadow-sm shrink-0">
+                        <div className="h-10 w-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-slate-700 shadow-none shrink-0">
                           {client.name.substring(0, 2).toUpperCase()}
                         </div>
                         <div className="min-w-0">
@@ -212,9 +212,9 @@ export default function Clientes({ clients = [] }) {
                     <td className="px-6 py-4 text-center">
                       <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold border ${
                         convStatus === 'En Ejecución' || convStatus === 'active'
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          ? 'bg-slate-50 text-blue-800 border-slate-200'
                           : convStatus === 'Pendiente' || convStatus === 'snoozed'
-                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                            ? 'bg-slate-50 text-slate-700 border-slate-200'
                             : 'bg-slate-100 text-slate-600 border-slate-200'
                       }`}>
                         {convStatus === 'Pendiente' ? <Clock className="h-3 w-3" /> : convStatus === 'Cerrado' ? <Archive className="h-3 w-3" /> : <PlayCircle className="h-3 w-3" />}
@@ -226,7 +226,7 @@ export default function Clientes({ clients = [] }) {
                     <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => handleOpenDetails(client)}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-emerald-500 hover:text-white text-slate-700 font-bold text-xs transition-all shadow-sm"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 font-bold text-xs transition-all shadow-sm"
                       >
                         <Eye className="h-3.5 w-3.5" />
                         Ver Detalles
@@ -271,7 +271,7 @@ export default function Clientes({ clients = [] }) {
                     onClick={() => setCurrentPage(pageNum)}
                     className={`h-8 w-8 rounded-xl text-xs font-extrabold transition-all ${
                       currentPage === pageNum
-                        ? 'bg-emerald-600 text-white shadow-sm'
+                        ? 'bg-blue-700 text-slate-700 shadow-none'
                         : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
                     }`}
                   >
@@ -303,7 +303,7 @@ export default function Clientes({ clients = [] }) {
               
               {/* ENCABEZADO CLIENTE */}
               <div className="flex flex-col items-center text-center pb-6 border-b border-slate-200">
-                <div className="h-20 w-20 rounded-3xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center font-black text-2xl text-white shadow-md mb-3">
+                <div className="h-20 w-20 rounded-3xl bg-slate-100 flex items-center justify-center font-black text-2xl text-slate-700 shadow-none mb-3">
                   {selectedClient.name.substring(0, 2).toUpperCase()}
                 </div>
                 <h2 className="text-lg font-black text-slate-800">{selectedClient.name}</h2>
@@ -325,7 +325,7 @@ export default function Clientes({ clients = [] }) {
                   <select
                     value={activeChat ? activeChat.convStatus : selectedClient.convStatus}
                     onChange={(e) => handleStatusChange(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-xs"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-xs"
                   >
                     <option value="En Ejecución">🟢 En Ejecución (Activo)</option>
                     <option value="Pendiente">🟡 Pendiente</option>
@@ -342,8 +342,8 @@ export default function Clientes({ clients = [] }) {
                     onClick={handleToggleBot}
                     className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 border transition-all ${
                       activeChat && activeChat.status === 'IA'
-                        ? 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100'
-                        : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                        ? 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-indigo-100'
+                        : 'bg-slate-50 text-blue-800 border-slate-200 hover:bg-slate-100'
                     }`}
                   >
                     {activeChat && activeChat.status === 'IA' ? (
@@ -367,7 +367,7 @@ export default function Clientes({ clients = [] }) {
                   <div className="flex flex-wrap gap-1">
                     {selectedClient.labels && selectedClient.labels.length > 0 ? (
                       selectedClient.labels.map(tag => (
-                        <span key={tag} className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-100 text-emerald-800">
+                        <span key={tag} className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-slate-100 text-slate-700">
                           {tag}
                         </span>
                       ))
@@ -394,7 +394,7 @@ export default function Clientes({ clients = [] }) {
                       setIsDetailModalOpen(false);
                       handleGoToChat(activeChat.id);
                     }}
-                    className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all"
+                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all"
                   >
                     <MessageSquare className="h-4 w-4" /> Ir a la pantalla de Chat
                   </button>
@@ -409,8 +409,8 @@ export default function Clientes({ clients = [] }) {
                     <TrendingUp className="h-4 w-4" /> Convertir en Prospecto de Prestamo
                   </button>
                 ) : (
-                  <form onSubmit={handleConvertToLead} className="bg-indigo-50 border border-indigo-200 rounded-xl p-3 space-y-2">
-                    <p className="text-[10px] font-extrabold uppercase text-indigo-700 tracking-widest">Registrar Prestamo</p>
+                  <form onSubmit={handleConvertToLead} className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
+                    <p className="text-[10px] font-extrabold uppercase text-slate-700 tracking-widest">Registrar Prestamo</p>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">$</span>
                       <input
@@ -419,14 +419,14 @@ export default function Clientes({ clients = [] }) {
                         value={leadForm.monto}
                         onChange={(e) => setLeadForm({ ...leadForm, monto: e.target.value })}
                         min="0"
-                        className="w-full pl-6 pr-3 py-1.5 rounded-lg border border-indigo-200 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-400 text-slate-700"
+                        className="w-full pl-6 pr-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-400 text-slate-700"
                         required
                       />
                     </div>
                     <select
                       value={leadForm.stage}
                       onChange={(e) => setLeadForm({ ...leadForm, stage: e.target.value })}
-                      className="w-full px-3 py-1.5 rounded-lg border border-indigo-200 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-400 text-slate-700"
+                      className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-400 text-slate-700"
                     >
                       <option value="Nuevo">Nuevo</option>
                       <option value="En Proceso">En Proceso</option>
@@ -438,7 +438,7 @@ export default function Clientes({ clients = [] }) {
                       placeholder="Nota (ej: para capital de trabajo)"
                       value={leadForm.reason}
                       onChange={(e) => setLeadForm({ ...leadForm, reason: e.target.value })}
-                      className="w-full px-3 py-1.5 rounded-lg border border-indigo-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-400 text-slate-700"
+                      className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-400 text-slate-700"
                     />
                     <div className="flex gap-2">
                       <button type="button" onClick={() => setIsLeadFormOpen(false)} className="flex-1 py-1.5 bg-slate-200 text-slate-600 rounded-lg text-xs font-bold">Cancelar</button>
@@ -479,7 +479,7 @@ export default function Clientes({ clients = [] }) {
                               ? 'bg-white text-slate-800 rounded-tl-xs border border-slate-200'
                               : msg.sender === 'ia'
                                 ? 'bg-indigo-600 text-white rounded-tr-xs'
-                                : 'bg-emerald-600 text-white rounded-tr-xs'
+                                : 'bg-blue-700 text-white rounded-tr-xs'
                           }`}>
                             <p className="font-semibold">{msg.text}</p>
                           </div>
@@ -508,12 +508,12 @@ export default function Clientes({ clients = [] }) {
                       placeholder="Escribir respuesta rápida..."
                       value={modalInputText}
                       onChange={(e) => setModalInputText(e.target.value)}
-                      className="flex-1 h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="flex-1 h-10 px-4 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600"
                     />
                     <button
                       type="submit"
                       disabled={!modalInputText.trim()}
-                      className="h-10 px-4 bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-200 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs"
+                      className="h-10 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs"
                     >
                       <Send className="h-3.5 w-3.5" /> Enviar
                     </button>
