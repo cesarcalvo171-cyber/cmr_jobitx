@@ -271,7 +271,7 @@ export default function Clientes({ clients = [] }) {
                     onClick={() => setCurrentPage(pageNum)}
                     className={`h-8 w-8 rounded-xl text-xs font-extrabold transition-all ${
                       currentPage === pageNum
-                        ? 'bg-blue-700 text-slate-700 shadow-none'
+                        ? 'bg-slate-600 text-white shadow-none'
                         : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
                     }`}
                   >
@@ -327,9 +327,9 @@ export default function Clientes({ clients = [] }) {
                     onChange={(e) => handleStatusChange(e.target.value)}
                     className="w-full h-10 px-3 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-xs"
                   >
-                    <option value="En Ejecución">🟢 En Ejecución (Activo)</option>
-                    <option value="Pendiente">🟡 Pendiente</option>
-                    <option value="Cerrado">🔴 Cerrado / Archivado</option>
+                    <option value="En Ejecución"> En Ejecución (Activo)</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Cerrado"> Cerrado / Archivado</option>
                   </select>
                 </div>
 
