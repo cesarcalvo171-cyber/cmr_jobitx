@@ -40,32 +40,32 @@ export default function DashboardView({ chats = [], leads = [] }) {
       value: totalChats.toString(), 
       subtitle: `${enEjecucion} activas hoy`, 
       icon: MessageSquare, 
-      color: 'text-emerald-600', 
-      bg: 'bg-emerald-50' 
+      color: 'text-blue-700', 
+      bg: 'bg-blue-200' 
     },
     { 
       label: 'TOTAL LEADS EN PIPE', 
       value: totalLeads.toString(), 
-      subtitle: `${leadsHot} leads calientes 🔥`, 
+      subtitle: `${leadsHot} leads calientes `, 
       icon: UserPlus, 
-      color: 'text-teal-600', 
-      bg: 'bg-teal-50' 
+     color: 'text-blue-700', 
+      bg: 'bg-blue-200' 
     },
     { 
       label: 'CONVERSACIONES EN EJECUCIÓN', 
       value: enEjecucion.toString(), 
       subtitle: `${pendientes} pendientes`, 
       icon: PlayCircle, 
-      color: 'text-blue-600', 
-      bg: 'bg-blue-50' 
+      color: 'text-blue-700',  
+      bg: 'bg-blue-200' 
     },
     { 
       label: 'AUTOMATIZACIÓN BOT', 
       value: `${botEfficiency}%`, 
       subtitle: `${botActiveCount} chats atendidos por IA`, 
       icon: Bot, 
-      color: 'text-indigo-600', 
-      bg: 'bg-indigo-50' 
+      color: 'text-blue-700', 
+      bg: 'bg-indigo-200' 
     },
   ];
 
@@ -151,11 +151,11 @@ export default function DashboardView({ chats = [], leads = [] }) {
                       <PlayCircle className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-extrabold uppercase tracking-wider text-emerald-800">En Ejecución / Activos</p>
-                      <p className="text-xs text-emerald-600 font-semibold">Chats en flujo activo</p>
+                      <p className="text-xs font-extrabold uppercase tracking-wider text-black">En Ejecución / Activos</p>
+                      <p className="text-xs text-black font-semibold">Chats en flujo activo</p>
                     </div>
                   </div>
-                  <span className="text-2xl font-black text-emerald-700">{enEjecucion}</span>
+                  <span className="text-2xl font-black text-black">{enEjecucion}</span>
                 </div>
                 {/* Pendientes */}
                 <div className="rounded-2xl p-4 bg-amber-50/60 border border-amber-100 flex justify-between items-center">
@@ -164,11 +164,11 @@ export default function DashboardView({ chats = [], leads = [] }) {
                       <Clock className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-extrabold uppercase tracking-wider text-amber-800">Pendientes</p>
-                      <p className="text-xs text-amber-600 font-semibold">Esperando respuesta</p>
+                      <p className="text-xs font-extrabold uppercase tracking-wider text-black">Pendientes</p>
+                      <p className="text-xs text-black font-semibold">Esperando respuesta</p>
                     </div>
                   </div>
-                  <span className="text-2xl font-black text-amber-700">{pendientes}</span>
+                  <span className="text-2xl font-black text-black">{pendientes}</span>
                 </div>
                 {/* Cerrados */}
                 <div className="rounded-2xl p-4 bg-slate-100/70 border border-slate-200 flex justify-between items-center">
@@ -183,8 +183,9 @@ export default function DashboardView({ chats = [], leads = [] }) {
                   </div>
                   <span className="text-2xl font-black text-slate-700">{cerrados}</span>
                 </div>
-                
-                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
+                {
+                  /*
+                   <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
                   <div className="flex items-center gap-2 text-indigo-700">
                     <Bot className="h-4 w-4" /><span>Modo IA: {botActiveCount}</span>
                   </div>
@@ -192,6 +193,10 @@ export default function DashboardView({ chats = [], leads = [] }) {
                     <UserCheck className="h-4 w-4" /><span>Humano: {humanActiveCount}</span>
                   </div>
                 </div>
+                  
+                  */
+                }
+               
               </div>
             ) : (
               <div className="space-y-4 animate-fadeIn">
@@ -205,11 +210,11 @@ export default function DashboardView({ chats = [], leads = [] }) {
                       <Handshake className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-extrabold uppercase tracking-wider text-teal-800">Nuevos Ingresos</p>
-                      <p className="text-xs text-teal-600 font-semibold">Recién registrados</p>
+                      <p className="text-xs font-extrabold uppercase tracking-wider text-black">Nuevos Ingresos</p>
+                      <p className="text-xs text-black font-semibold">Recién registrados</p>
                     </div>
                   </div>
-                  <span className="text-2xl font-black text-teal-700">{leadsNuevos}</span>
+                  <span className="text-2xl font-black text-black">{leadsNuevos}</span>
                 </div>
                 {/* Calificados */}
                 <div className="rounded-2xl p-4 bg-blue-50/60 border border-blue-100 flex justify-between items-center">
@@ -218,11 +223,11 @@ export default function DashboardView({ chats = [], leads = [] }) {
                       <CheckCircle2 className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-extrabold uppercase tracking-wider text-blue-800">En Negociación / Demo</p>
-                      <p className="text-xs text-blue-600 font-semibold">Leads calificados</p>
+                      <p className="text-xs font-extrabold uppercase tracking-wider text-black">En Negociación / Demo</p>
+                      <p className="text-xs text-black font-semibold">Leads calificados</p>
                     </div>
                   </div>
-                  <span className="text-2xl font-black text-blue-700">{leadsCalificados}</span>
+                  <span className="text-2xl font-black text-black">{leadsCalificados}</span>
                 </div>
                 {/* Cerrados */}
                 <div className="rounded-2xl p-4 bg-emerald-50/60 border border-emerald-100 flex justify-between items-center">
@@ -231,16 +236,19 @@ export default function DashboardView({ chats = [], leads = [] }) {
                       <CheckCircle className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-extrabold uppercase tracking-wider text-emerald-800">Cerrados Exitosos</p>
-                      <p className="text-xs text-emerald-600 font-semibold">Ventas finalizadas</p>
+                      <p className="text-xs font-extrabold uppercase tracking-wider text-black">Cerrados Exitosos</p>
+                      <p className="text-xs text-black font-semibold">Ventas finalizadas</p>
                     </div>
                   </div>
-                  <span className="text-2xl font-black text-emerald-700">{leadsCerrados}</span>
+                  <span className="text-2xl font-black text-black">{leadsCerrados}</span>
                 </div>
-                
+                {/* Calientes 
                 <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-500">
                   <span className="flex items-center gap-1"><Flame className="h-4 w-4 text-red-500" /> Leads Calientes: {leadsHot}</span>
                 </div>
+                
+                */}
+                
               </div>
             )}
           </div>
