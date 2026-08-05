@@ -64,6 +64,15 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
     exportToCsv('Pipeline_Prestamos', headers, rows);
   };
 
+  // ── Paginación ──
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Resetear a página 1 cuando cambian filtros
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [search, filterEtapa]);
+
   // ── Calculos reales de prestamos ──
   const totalLeads = leads.length;
   const prestamosEnProceso = leads.filter(l => l.stage === 'En Proceso').length;
@@ -88,6 +97,11 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
     return matchesSearch && matchesEtapa;
   });
 
+  // Aplicar Paginación
+  const totalPages = Math.ceil(filteredLeads.length / itemsPerPage) || 1;
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedLeads = filteredLeads.slice(startIndex, startIndex + itemsPerPage);
+
   // ── Crear Lead ──
   const handleCreate = (e) => {
     e.preventDefault();
@@ -104,10 +118,10 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 flex flex-col h-full">
+    <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50 flex flex-col h-full">
 
       {/* ── Encabezado ── */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-4">
         <div>
           <h1 className="text-3xl font-black text-slate-800 tracking-tight font-outfit">Gestion de Prestamos</h1>
           <p className="text-sm text-slate-500 font-medium mt-1">Pipeline completo de solicitudes de prestamos via WhatsApp.</p>
@@ -131,42 +145,42 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
       </div>
 
       {/* ── Tarjetas de metricas reales ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         
-        <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex flex-col">
-          <div className="p-2.5 rounded-xl bg-slate-100 text-slate-600 w-fit mb-3">
-            <MessageSquare className="h-5 w-5" />
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col">
+          <div className="flex justify-between items-center mb-1">
+            <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">LEADS TOTALES</p>
+            <MessageSquare className="h-4 w-4 text-slate-400" />
           </div>
-          <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">LEADS TOTALES</p>
-          <h3 className="text-3xl font-black text-slate-800">{totalLeads}</h3>
-          <p className="text-xs text-slate-400 font-semibold mt-1">{leads.filter(l => l.stage === 'Nuevo').length} nuevos sin procesar</p>
+          <h3 className="text-2xl font-black text-slate-800">{totalLeads}</h3>
+          <p className="text-[10px] text-slate-500 font-semibold mt-0.5">{leads.filter(l => l.stage === 'Nuevo').length} nuevos sin procesar</p>
         </div>
 
-        <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex flex-col">
-          <div className="p-2.5 rounded-xl bg-slate-50 text-blue-600 w-fit mb-3">
-            <Clock className="h-5 w-5" />
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col">
+          <div className="flex justify-between items-center mb-1">
+            <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">PRESTAMOS PROG.</p>
+            <Clock className="h-4 w-4 text-blue-500" />
           </div>
-          <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">PRESTAMOS PROG.</p>
-          <h3 className="text-3xl font-black text-slate-800">{prestamosProgramados}</h3>
-          <p className="text-xs text-slate-400 font-semibold mt-1">{prestamosEnProceso} en evaluacion</p>
+          <h3 className="text-2xl font-black text-slate-800">{prestamosProgramados}</h3>
+          <p className="text-[10px] text-slate-500 font-semibold mt-0.5">{prestamosEnProceso} en evaluacion</p>
         </div>
 
-        <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex flex-col">
-          <div className="p-2.5 rounded-xl bg-slate-50 text-slate-700 w-fit mb-3">
-            <CheckCircle className="h-5 w-5" />
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col">
+          <div className="flex justify-between items-center mb-1">
+            <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">PRESTAMOS CERRADOS</p>
+            <CheckCircle className="h-4 w-4 text-slate-500" />
           </div>
-          <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">PRESTAMOS CERRADOS</p>
-          <h3 className="text-3xl font-black text-slate-800">{prestamosCerrados}</h3>
-          <p className="text-xs text-slate-700 font-semibold mt-1">Dinero ya desembolsado</p>
+          <h3 className="text-2xl font-black text-slate-800">{prestamosCerrados}</h3>
+          <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Dinero ya desembolsado</p>
         </div>
 
-        <div className="bg-white rounded-3xl p-5 shadow-sm border border-indigo-100 flex flex-col">
-          <div className="p-2.5 rounded-xl bg-slate-50 text-indigo-600 w-fit mb-3">
-            <DollarSign className="h-5 w-5" />
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col">
+          <div className="flex justify-between items-center mb-1">
+            <p className="text-[10px] font-extrabold text-blue-500 uppercase tracking-widest">CAPITAL COLOCADO</p>
+            <DollarSign className="h-4 w-4 text-blue-500" />
           </div>
-          <p className="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest mb-1">CAPITAL COLOCADO</p>
-          <h3 className="text-2xl font-black text-slate-700">{formatMonto(montoTotalColocado)}</h3>
-          <p className="text-xs text-indigo-400 font-semibold mt-1">Pipeline: {formatMonto(montoPipeline)}</p>
+          <h3 className="text-xl font-black text-slate-800">{formatMonto(montoTotalColocado)}</h3>
+          <p className="text-[10px] text-blue-500 font-semibold mt-0.5">Pipeline: {formatMonto(montoPipeline)}</p>
         </div>
 
       </div>
@@ -226,7 +240,7 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
               </tr>
             </thead>
             <tbody>
-              {filteredLeads.map((lead) => {
+              {paginatedLeads.map((lead) => {
                 const cfg = ETAPA_CONFIG[lead.stage] || ETAPA_CONFIG['Nuevo'];
                 const currentIndex = ETAPAS.indexOf(lead.stage);
                 const nextStage = currentIndex < ETAPAS.length - 1 ? ETAPAS[currentIndex + 1] : null;
@@ -312,7 +326,7 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
                 );
               })}
 
-              {filteredLeads.length === 0 && (
+              {paginatedLeads.length === 0 && (
                 <tr>
                   <td colSpan="6" className="py-16 text-center text-slate-400 font-medium text-xs">
                     No se encontraron prospectos de prestamos con los filtros seleccionados.
@@ -322,6 +336,49 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
             </tbody>
           </table>
         </div>
+
+        {/* PIE DE PÁGINA: PAGINACIÓN */}
+        {filteredLeads.length > 0 && (
+          <div className="px-6 py-3.5 bg-slate-50/80 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-center gap-3 shrink-0">
+            
+
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="flex items-center justify-center p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:hover:bg-white text-slate-600 transition-all shadow-xs"
+                title="Página Anterior"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+
+              <div className="flex items-center gap-1 px-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`h-8 w-8 rounded-xl text-xs font-extrabold transition-all ${
+                      currentPage === pageNum
+                        ? 'bg-slate-700 text-white shadow-sm'
+                        : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="flex items-center justify-center p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:hover:bg-white text-slate-600 transition-all shadow-xs"
+                title="Página Siguiente"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ── Modal Formulario Nuevo Prospecto ── */}
