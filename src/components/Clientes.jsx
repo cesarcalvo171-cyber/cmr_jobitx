@@ -249,10 +249,8 @@ export default function Clientes({ clients = [] }) {
 
         {/* PIE DE PÁGINA: PAGINACIÓN */}
         {filteredClients.length > 0 && (
-          <div className="px-6 py-3.5 bg-slate-50/80 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
-            <p className="text-xs font-semibold text-slate-500">
-              Mostrando <span className="font-extrabold text-slate-700">{filteredClients.length === 0 ? 0 : startIndex + 1}</span> a <span className="font-extrabold text-slate-700">{Math.min(startIndex + itemsPerPage, filteredClients.length)}</span> de <span className="font-extrabold text-slate-700">{filteredClients.length}</span> clientes
-            </p>
+          <div className="px-6 py-3.5 bg-slate-50/80 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-center gap-3 shrink-0">
+          
 
             <div className="flex items-center gap-1.5">
               <button
