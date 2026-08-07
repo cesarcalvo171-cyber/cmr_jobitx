@@ -223,7 +223,7 @@ export default function DashboardView({ chats = [], leads = [] }) {
                       <CheckCircle2 className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-extrabold uppercase tracking-wider text-black">En Negociación / Demo</p>
+                      <p className="text-xs font-extrabold uppercase tracking-wider text-black">En Negociación</p>
                       <p className="text-xs text-black font-semibold">Leads calificados</p>
                     </div>
                   </div>
