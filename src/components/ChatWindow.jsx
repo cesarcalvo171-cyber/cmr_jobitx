@@ -153,7 +153,7 @@ export default function ChatWindow({ chat, onSendMessage, onToggleStatus }) {
         </div>
 
         {/* ─── Mensajes ─────────────────────────────────────────────────────── */}
-        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4 bg-white">
+        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4 bg-transparent">
 
           {/* Sin mensajes */}
           {(!chat.messages || chat.messages.length === 0) && (
@@ -184,8 +184,8 @@ export default function ChatWindow({ chat, onSendMessage, onToggleStatus }) {
                   {/* Estilo Messenger */}
                   <div className={`px-4 py-2 text-sm leading-relaxed ${
                     isClient
-                      ? 'bg-slate-100 text-slate-900 rounded-2xl rounded-bl-sm'
-                      : 'bg-blue-600 text-white rounded-2xl rounded-br-sm'
+                      ? 'bg-slate-200 text-slate-900 rounded-2xl rounded-bl-sm'
+                      : 'bg-blue-700 text-white rounded-2xl rounded-br-sm'
                   }`}>
                     {msg.text}
                   </div>
@@ -211,7 +211,7 @@ export default function ChatWindow({ chat, onSendMessage, onToggleStatus }) {
 
           {/* Aviso contextual minimalista */}
           {isBotActive && (
-            <div className="mb-3 px-4 py-2 bg-slate-50 rounded-lg flex items-center justify-between text-xs font-medium text-slate-600">
+            <div className="mb-3 px-4 py-2 bg-blue-100 rounded-lg flex items-center justify-between text-xs font-medium text-slate-600">
               <span className="flex items-center gap-1.5">
                 <Bot className="h-3.5 w-3.5 text-slate-400" />
                 La IA está respondiendo automáticamente.
@@ -226,15 +226,13 @@ export default function ChatWindow({ chat, onSendMessage, onToggleStatus }) {
           )}
 
           <form onSubmit={handleSend} className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-full px-4 py-2 focus-within:bg-white focus-within:border-slate-300 transition-colors">
-            <button type="button" className="p-1.5 text-slate-400 hover:text-slate-600 shrink-0">
-              <Smile className="h-5 w-5" />
-            </button>
+           
             <input
               type="text"
               placeholder={isBotActive ? 'Toma el control para responder...' : 'Escribe un mensaje...'}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              className="flex-1 bg-transparent border-none py-1.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-0"
+              className="flex-1 bg-transparent border-none py-1.5 text-sm text-slate-800 placeholder-slate-400 focus:not-[]: "
             />
             <button
               type="submit"
@@ -248,7 +246,7 @@ export default function ChatWindow({ chat, onSendMessage, onToggleStatus }) {
       </div>
 
       {/* ─── Panel Lateral Derecho Minimalista ─────────────────────────────── */}
-      <div className="w-[280px] shrink-0 bg-white overflow-y-auto flex flex-col hidden xl:flex">
+      <div className="w-[280px] shrink-0  overflow-y-auto flex flex-col hidden xl:flex">
 
         {/* Avatar grande + nombre */}
         <div className="flex flex-col items-center pt-10 pb-8 px-5 border-b border-slate-100">
@@ -357,12 +355,12 @@ export default function ChatWindow({ chat, onSendMessage, onToggleStatus }) {
 
           <button
             onClick={() => setIsDeleteModalOpen(true)}
-            className="w-full flex items-center justify-center gap-2 py-2.5 bg-transparent text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg font-medium text-sm transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-2.5  text-white bg-red-600 rounded-lg font-medium text-sm transition-colors"
           >
             <Trash2 className="h-4 w-4" /> Eliminar conversación
           </button>
 
-          <button className="w-full flex items-center justify-center gap-2 py-2.5 bg-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium text-sm transition-colors">
+          <button className="w-full flex items-center justify-center gap-2 py-2.5  text-white bg-slate-900  rounded-lg font-medium text-sm transition-colors">
             <Ban className="h-4 w-4" /> Bloquear contacto
           </button>
         </div>

@@ -145,43 +145,43 @@ export default function DashboardView({ chats = [], leads = [] }) {
                   <p className="text-xs text-slate-500 font-medium">Distribución de {totalChats} chats en el CRM</p>
                 </div>
                 {/* En Ejecución */}
-                <div className="rounded-2xl p-4 bg-emerald-50/60 border border-emerald-100 flex justify-between items-center">
+                <div className="rounded-2xl p-4 bg-gradient-to-r from-blue-950 to-cyan-700 border border-teal-300   flex justify-between items-center">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-emerald-500 text-white">
+                    <div className="p-2.5 rounded-xl  text-white">
                       <PlayCircle className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-extrabold uppercase tracking-wider text-black">En Ejecución / Activos</p>
-                      <p className="text-xs text-black font-semibold">Chats en flujo activo</p>
+                      <p className="text-xs font-extrabold uppercase tracking-wider text-white">En Ejecución / Activos</p>
+                      <p className="text-xs text-white font-semibold">Chats en flujo activo</p>
                     </div>
                   </div>
-                  <span className="text-2xl font-black text-black">{enEjecucion}</span>
+                  <span className="text-2xl font-black text-white">{enEjecucion}</span>
                 </div>
                 {/* Pendientes */}
-                <div className="rounded-2xl p-4 bg-amber-50/60 border border-amber-100 flex justify-between items-center">
+                <div className="rounded-2xl p-4 bg-gradient-to-r from-orange-700 to-orange-500 border-orange-300 flex justify-between items-center">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-amber-500 text-white">
+                    <div className="p-2.5 rounded-xl 0 text-white">
                       <Clock className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-extrabold uppercase tracking-wider text-black">Pendientes</p>
-                      <p className="text-xs text-black font-semibold">Esperando respuesta</p>
+                      <p className="text-xs font-extrabold uppercase tracking-wider text-white">Pendientes</p>
+                      <p className="text-xs text-white font-semibold">Esperando respuesta</p>
                     </div>
                   </div>
-                  <span className="text-2xl font-black text-black">{pendientes}</span>
+                  <span className="text-2xl font-black text-white">{pendientes}</span>
                 </div>
                 {/* Cerrados */}
-                <div className="rounded-2xl p-4 bg-slate-100/70 border border-slate-200 flex justify-between items-center">
+                <div className="rounded-2xl p-4  bg-gradient-to-r from-slate-700 to-slate-500  border border-slate-200 flex justify-between items-center">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-slate-600 text-white">
+                    <div className="p-2.5 rounded-xl  text-white">
                       <Archive className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-extrabold uppercase tracking-wider text-slate-800">Archivados</p>
-                      <p className="text-xs text-slate-500 font-semibold">Conversaciones finalizadas</p>
+                      <p className="text-xs font-extrabold uppercase tracking-wider text-white">Archivados</p>
+                      <p className="text-xs text-white font-semibold">Conversaciones finalizadas</p>
                     </div>
                   </div>
-                  <span className="text-2xl font-black text-slate-700">{cerrados}</span>
+                  <span className="text-2xl font-black text-white">{cerrados}</span>
                 </div>
                 {
                   /*
@@ -204,43 +204,43 @@ export default function DashboardView({ chats = [], leads = [] }) {
                   <p className="text-xs text-slate-500 font-medium">Embudo de {totalLeads} prospectos activos</p>
                 </div>
                 {/* Nuevos */}
-                <div className="rounded-2xl p-4 bg-teal-50/60 border border-teal-100 flex justify-between items-center">
+                <div className="rounded-2xl p-4 bg-gradient-to-r from-blue-950 to-cyan-700 border border-teal-300 flex justify-between items-center">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-teal-500 text-white">
+                    <div className="p-2.5 rounded-xl  text-white">
                       <Handshake className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-extrabold uppercase tracking-wider text-black">Nuevos Ingresos</p>
-                      <p className="text-xs text-black font-semibold">Recién registrados</p>
+                      <p className="text-xs font-extrabold uppercase tracking-wider text-white">Nuevos Ingresos</p>
+                      <p className="text-xs text-white font-semibold">Recién registrados</p>
                     </div>
                   </div>
-                  <span className="text-2xl font-black text-black">{leadsNuevos}</span>
+                  <span className="text-2xl font-black text-white">{leadsNuevos}</span>
                 </div>
                 {/* Calificados */}
-                <div className="rounded-2xl p-4 bg-blue-50/60 border border-blue-100 flex justify-between items-center">
+                <div className="rounded-2xl p-4   bg-gradient-to-r from-blue-500 to-cyan-300 border border-teal-100 flex justify-between items-center">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-blue-500 text-white">
+                    <div className="p-2.5 rounded-xl  text-white">
                       <CheckCircle2 className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-extrabold uppercase tracking-wider text-black">En Negociación</p>
-                      <p className="text-xs text-black font-semibold">Leads calificados</p>
+                      <p className="text-xs font-extrabold uppercase tracking-wider text-white">En Negociación</p>
+                      <p className="text-xs text-white font-semibold">Leads calificados</p>
                     </div>
                   </div>
-                  <span className="text-2xl font-black text-black">{leadsCalificados}</span>
+                  <span className="text-2xl font-black text-white">{leadsCalificados}</span>
                 </div>
                 {/* Cerrados */}
-                <div className="rounded-2xl p-4 bg-emerald-50/60 border border-emerald-100 flex justify-between items-center">
+                <div className="rounded-2xl p-4 bg-gradient-to-r from-green-800  to-green-600 border border-teal-500  flex justify-between items-center">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-emerald-600 text-white">
+                    <div className="p-2.5 rounded-xl  text-white">
                       <CheckCircle className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-extrabold uppercase tracking-wider text-black">Cerrados Exitosos</p>
-                      <p className="text-xs text-black font-semibold">Ventas finalizadas</p>
+                      <p className="text-xs font-extrabold uppercase tracking-wider text-white">Cerrados Exitosos</p>
+                      <p className="text-xs text-white font-semibold">Ventas finalizadas</p>
                     </div>
                   </div>
-                  <span className="text-2xl font-black text-black">{leadsCerrados}</span>
+                  <span className="text-2xl font-black text-white">{leadsCerrados}</span>
                 </div>
                 {/* Calientes 
                 <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-500">
@@ -265,14 +265,15 @@ export default function DashboardView({ chats = [], leads = [] }) {
           
           <div className="space-y-3 overflow-y-auto flex-1 pr-2">
             {recentActivity.map(act => (
-              <div key={act.id} className="p-4 rounded-2xl bg-slate-50/50 border border-slate-100 hover:bg-slate-50 transition-colors flex justify-between items-center gap-4 group">
+              <div key={act.id} className="p-4 rounded-2xl bg-slate-50/50 border border-slate-300 shadow-md hover:bg-slate-50 transition-colors flex justify-between items-center gap-4 group">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-1 ">
                     <span className="font-bold text-slate-800 text-sm truncate">{act.contact}</span>
-                    <span className="text-[10px] font-bold text-slate-400">{act.time}</span>
+                   
                   </div>
                   <p className="text-xs text-slate-500 truncate italic">"{act.message}"</p>
                 </div>
+                 <span className="text-[10px] font-bold text-slate-400">{act.time}</span>
                 <button 
                   onClick={() => handleReply(act.id)}
                   className="px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 font-extrabold text-[11px] uppercase tracking-wider rounded-xl transition-all shrink-0 opacity-100 sm:opacity-50 sm:group-hover:opacity-100"

@@ -134,7 +134,7 @@ function App() {
     <div className="flex flex-col h-screen w-screen overflow-hidden font-sans relative" style={{ backgroundColor: 'var(--bg-base)' }}>
       
       {/* Top Header Navbar */}
-      <header className="h-16 bg-white border-b border-slate-200 px-4 md:px-8 flex items-center justify-between shrink-0 relative z-40">
+      <header className="h-16 bg-blue-950 border-b border-slate-200 px-4 md:px-8 flex items-center justify-between shrink-0 relative z-40">
         
         {/* Izquierda: Logo y Menú Móvil */}
         <div className="flex items-center gap-3 w-1/4">
@@ -147,7 +147,7 @@ function App() {
           
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
            
-            <h1 className="font-black text-black text-lg tracking-tight font-outfit hidden sm:block">
+            <h1 className="font-black text-white text-lg tracking-tight font-outfit hidden sm:block">
                Kyvorix
             </h1>
           </div>
@@ -161,8 +161,8 @@ function App() {
               onClick={() => setActiveTab(item.id)}
               className={`h-full px-2 text-sm font-bold transition-all border-b-2 ${
                 activeTab === item.id 
-                  ? 'border-black text-slate-950' 
-                  : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
+                  ? 'border-emerald-300 border-b text-white' 
+                  : 'border-transparent text-white '
               }`}
             >
               {item.label}
@@ -181,7 +181,7 @@ function App() {
                   setIsHelpOpen(false);
                   setIsProfileOpen(false);
                 }}
-                className="text-slate-900  p-2 rounded-2xl  transition-colors relative"
+                className="text-white p-2 rounded-2xl hover:bg-blue-900  transition-colors relative"
                 title="Notificaciones"
               >
                 <Bell className="h-5 w-5" />
@@ -238,7 +238,7 @@ function App() {
                   setIsNotificationsOpen(false);
                   setIsProfileOpen(false);
                 }}
-                className="text-slate-500 hover:text-slate-800 p-2 rounded-2xl hover:bg-slate-100 transition-colors"
+                className="text-white hover:bg-blue-900   p-2 rounded-2xl "
                 title="Centro de Ayuda"
               >
                 <HelpCircle className="h-5 w-5" />
@@ -278,7 +278,7 @@ function App() {
               )}
             </div>
 
-            <div className="h-6 w-px bg-slate-200 hidden sm:block"></div>
+            <div className="h-6 w-px bg-blue-950 hidden sm:block"></div>
 
             {/* BOTÓN 3: PERFIL DE USUARIO Y CERRAR SESIÓN */}
             <div className="relative">
@@ -288,11 +288,11 @@ function App() {
                   setIsNotificationsOpen(false);
                   setIsHelpOpen(false);
                 }}
-                className="flex items-center gap-2 md:gap-3 p-1.5 rounded-2xl hover:bg-slate-100 transition-colors text-left"
+                className="flex items-center gap-2 md:gap-3 p-1.5 rounded-2xl hover:bg-blue-900 transition-colors text-left"
               >
                 
 
-                <div className="h-9 w-9 rounded-2xl  flex items-center justify-center text-blue-950 font-black  text-xs shrink-0">
+                <div className="h-9 w-9 rounded-2xl  flex items-center justify-center text-white font-black  text-xs shrink-0">
                   <FaUserCircle className="h-5 w-5" />
                 </div>
               </button>
@@ -301,7 +301,7 @@ function App() {
               {isProfileOpen && (
                 <div className="absolute right-0 mt-3 w-64 bg-white rounded-3xl shadow-2xl border border-slate-100 p-4 z-50 animate-fadeInUp">
                   <div className="pb-3 border-b border-slate-100 mb-3">
-                    <p className="font-black text-slate-800 text-sm">{profile?.full_name  }</p>
+                    <p className="font-black text-blue-950 text-sm">{profile?.full_name  }</p>
                     <p className="text-xs font-semibold text-slate-400 truncate">{userEmail  }</p>
                     
                   </div>
@@ -331,8 +331,8 @@ function App() {
                 }}
                 className={`p-3 text-left rounded-xl text-sm font-bold transition-colors ${
                   activeTab === item.id 
-                    ? 'bg-blue-50 text-blue-700' 
-                    : 'text-slate-600 hover:bg-slate-50'
+                    ? ' text-white' 
+                    : 'text-blue-950 hover:bg-slate-50'
                 }`}
               >
                 {item.label}
