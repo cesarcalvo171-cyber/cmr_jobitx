@@ -2,15 +2,21 @@ import { useState, useRef, useEffect } from 'react';
 import {
   Send, Smile, MessageSquare,
   CheckCheck, Bot, UserCheck, Tag, FileText, Ban, Info,
-  PlayCircle, Clock, Archive, Trash2
+  PlayCircle, Clock, Archive, Trash2, TrendingUp, X
 } from 'lucide-react';
 import { useCRMStore } from '../store/crmStore';
 
 export default function ChatWindow({ chat, onSendMessage, onToggleStatus }) {
-  const { updateConversationStatus, deleteChat } = useCRMStore();
+  const { updateConversationStatus, deleteChat, addLead } = useCRMStore();
   const [inputText, setInputText] = useState('');
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef(null);
+
+  // Estados para modales y formularios en sidebar
+  const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
+  const [leadForm, setLeadForm] = useState({ monto: '', reason: '', stage: 'Nuevo' });
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteReason, setDeleteReason] = useState('');
 
   // Scroll al último mensaje cuando cambia la lista
   useEffect(() => {
@@ -63,6 +69,31 @@ export default function ChatWindow({ chat, onSendMessage, onToggleStatus }) {
   // ─── Cambiar estado conversación ──────────────────────────────────────────
   const handleConvStatusChange = (newStatus) => {
     updateConversationStatus(chat.id, newStatus);
+  };
+
+  // ─── Convertir a Prospecto (Lead) ─────────────────────────────────────────
+  const handleConvertToLead = async (e) => {
+    e.preventDefault();
+    if (!chat) return;
+    await addLead({
+      name: chat.name || 'Sin Nombre',
+      phone: chat.phone,
+      monto: parseFloat(leadForm.monto) || 0,
+      stage: leadForm.stage,
+      reason: leadForm.reason || `Convertido desde chat: ${chat.name}`
+    });
+    setLeadForm({ monto: '', reason: '', stage: 'Nuevo' });
+    setIsLeadFormOpen(false);
+  };
+
+  // ─── Eliminar conversación con razón ──────────────────────────────────────
+  const handleDeleteSubmit = (e) => {
+    e.preventDefault();
+    if (!deleteReason.trim()) return;
+    console.log(`Eliminando conversación ${chat.id}. Razón: ${deleteReason}`);
+    deleteChat(chat.id);
+    setIsDeleteModalOpen(false);
+    setDeleteReason('');
   };
 
   return (
@@ -276,12 +307,56 @@ export default function ChatWindow({ chat, onSendMessage, onToggleStatus }) {
 
         {/* Botones de Acción Limpios */}
         <div className="p-6 space-y-3">
+          
+          {/* Formulario/Botón de Convertir a Lead */}
+          {!isLeadFormOpen ? (
+            <button
+              onClick={() => setIsLeadFormOpen(true)}
+              className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all mb-2"
+            >
+              <TrendingUp className="h-4 w-4" /> Convertir en Prospecto
+            </button>
+          ) : (
+            <form onSubmit={handleConvertToLead} className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2 mb-3">
+              <p className="text-[10px] font-extrabold uppercase text-slate-700 tracking-widest">Registrar Préstamo</p>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">$</span>
+                <input
+                  type="number"
+                  placeholder="Monto (ej: 2000)"
+                  value={leadForm.monto}
+                  onChange={(e) => setLeadForm({ ...leadForm, monto: e.target.value })}
+                  min="0"
+                  className="w-full pl-6 pr-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-600 text-slate-700"
+                  required
+                />
+              </div>
+              <select
+                value={leadForm.stage}
+                onChange={(e) => setLeadForm({ ...leadForm, stage: e.target.value })}
+                className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-600 text-slate-700"
+              >
+                <option value="Nuevo">Nuevo</option>
+                <option value="En Proceso">En Proceso</option>
+                <option value="Prestamo Programado">Préstamo Programado</option>
+                <option value="Prestamo Cerrado">Préstamo Cerrado</option>
+              </select>
+              <input
+                type="text"
+                placeholder="Nota (ej: capital de trabajo)"
+                value={leadForm.reason}
+                onChange={(e) => setLeadForm({ ...leadForm, reason: e.target.value })}
+                className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600 text-slate-700"
+              />
+              <div className="flex gap-2">
+                <button type="button" onClick={() => setIsLeadFormOpen(false)} className="flex-1 py-1.5 bg-slate-200 text-slate-600 rounded-lg text-xs font-bold">Cancelar</button>
+                <button type="submit" className="flex-1 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold">Guardar</button>
+              </div>
+            </form>
+          )}
+
           <button
-            onClick={() => {
-              if (window.confirm(`¿Estás seguro de que deseas eliminar permanentemente la conversación con ${chat.name}?`)) {
-                deleteChat(chat.id);
-              }
-            }}
+            onClick={() => setIsDeleteModalOpen(true)}
             className="w-full flex items-center justify-center gap-2 py-2.5 bg-transparent text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg font-medium text-sm transition-colors"
           >
             <Trash2 className="h-4 w-4" /> Eliminar conversación
@@ -292,6 +367,53 @@ export default function ChatWindow({ chat, onSendMessage, onToggleStatus }) {
           </button>
         </div>
       </div>
+
+      {/* ─── Modal Confirmar Eliminación ─────────────────────────────────────── */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-100 w-full max-w-sm p-6">
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="text-lg font-black text-slate-800">Eliminar conversación</h3>
+              <button onClick={() => setIsDeleteModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <p className="text-sm text-slate-500 mb-4 font-medium">
+              Por favor, indica la razón por la que estás eliminando esta conversación con <span className="font-bold text-slate-700">{chat.name}</span>. Esta acción no se puede deshacer.
+            </p>
+
+            <form onSubmit={handleDeleteSubmit} className="space-y-4">
+              <textarea
+                autoFocus
+                rows="3"
+                placeholder="Escribe la razón aquí..."
+                value={deleteReason}
+                onChange={(e) => setDeleteReason(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500 text-slate-700 font-medium resize-none"
+                required
+              />
+              
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsDeleteModalOpen(false)}
+                  className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-sm transition-all"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={!deleteReason.trim()}
+                  className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white rounded-xl font-bold text-sm transition-all shadow-sm"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );
