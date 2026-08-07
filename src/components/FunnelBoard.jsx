@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { UserPlus, Search, MessageSquare, DollarSign, TrendingUp, Clock, CheckCircle, AlertCircle, ChevronRight, X, Download } from 'lucide-react';
-import { exportToCsv } from '../lib/exportCsv';
+import { exportToExcel } from '../lib/exportExcel';
 import { useCRMStore } from '../store/crmStore';
 
 const ETAPAS = ['Nuevo', 'En Proceso', 'Prestamo Programado', 'Prestamo Cerrado'];
@@ -61,7 +61,7 @@ export default function FunnelBoard({ leads = [], onAddLead }) {
       lead.score === 'hot' ? 'Alta' : lead.score === 'warm' ? 'Media' : 'Normal',
       lead.reason || ''
     ]);
-    exportToCsv('Pipeline_Prestamos', headers, rows);
+    exportToExcel('Pipeline_Prestamos', headers, rows);
   };
 
   // ── Paginación ──

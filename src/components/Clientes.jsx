@@ -6,7 +6,7 @@ import {
   ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { useCRMStore } from '../store/crmStore';
-import { exportToCsv } from '../lib/exportCsv';
+import { exportToExcel } from '../lib/exportExcel';
 
 export default function Clientes({ clients = [] }) {
   const { 
@@ -69,7 +69,7 @@ export default function Clientes({ clients = [] }) {
         c.creationDate || ''
       ];
     });
-    exportToCsv('Directorio_Clientes', headers, rows);
+    exportToExcel('Directorio_Clientes', headers, rows);
   };
 
   const handleStatusChange = async (newStatus) => {
