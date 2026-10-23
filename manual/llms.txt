@@ -1,0 +1,24 @@
+# Kyvorix CRM — Machine-Readable Documentation & Operating Guide
+
+> Kyvorix is a React + Supabase + n8n financial CRM designed for loan origination, client relationship management, and real-time WhatsApp omni-channel messaging.
+
+## System Architecture
+- Frontend: React 18, Vite, Tailwind CSS, Zustand, Lucide React, SheetJS (XLSX).
+- Backend & DB: Supabase (PostgreSQL 17), Supabase Auth, Row Level Security (RLS).
+- Automation Engine: n8n workflow for WhatsApp Cloud API dispatch and incoming webhook ingestion.
+
+## Key Operational Endpoints & Variables
+- `VITE_SUPABASE_URL`: Supabase project connection URL.
+- `VITE_SUPABASE_ANON_KEY`: Safe public key for authenticated client access.
+- `VITE_N8N_SEND_WEBHOOK`: Webhook URL triggered when human agents dispatch messages.
+
+## Main Business Modules & Logic
+1. `ChatWindow.jsx`:
+   - Toggle `bot_enabled`: Toggles between automated AI agent and human advisor mode.
+   - Convert to Lead: Directly registers a loan application into `leads` table with amount, stage, and initial notes.
+   - Delete Conversation: Requires mandatory reason text input before executing deletion.
+2. `Clientes.jsx`:
+   - Client directory with Lead Scoring (`hot`, `warm`, `cold`).
+   - Export to Excel: Native `.xlsx` generation using `exportExcel.js` (avoids CSV delimiter/accent bugs).
+3. `FunnelBoard.jsx`:
+   - Kanban pipeline for loan progression across stages: New, Initial Contact, Negotiation/Evaluation, Approved/Won, Lost.

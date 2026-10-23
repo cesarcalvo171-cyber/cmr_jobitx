@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kyvorix CRM — Manual de Usuario</title>
+<style>
+@page {
+  size: A4;
+  margin: 16mm 12mm 16mm 12mm;
+}
+:root{
+  --bg:#ffffff; --panel:#ffffff; --card:#f8fafc;
+  --line:#e2e8f0; --line2:#cbd5e1;
+  --txt:#0f172a; --muted:#475569; --faint:#64748b;
+  --acc:#0084ff; --acc2:#0284c7; --acc-soft:#e0f2fe;
+  --grad:linear-gradient(135deg,#0084ff 0%,#0284c7 100%);
+  --ok:#059669; --warn:#d97706; --err:#dc2626; --r:10px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:#fff; color:var(--txt);
+  font:13px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{color:#0f172a;margin:0 0 .4em;letter-spacing:-.02em}
+h1{font-size:26px;font-weight:850}
+h2{font-size:18px;font-weight:800;border-bottom:2px solid var(--acc);padding-bottom:5px;margin-top:22px;page-break-after:avoid}
+h3{font-size:15px;font-weight:750;margin-top:14px}
+p{margin:0 0 .7em;color:var(--muted)}
+
+.cover{
+  padding:50px 20px 40px; text-align:center; border-bottom:2px solid var(--line);
+  background:linear-gradient(180deg,#f0f7ff 0%,#ffffff 100%);
+  page-break-after:always;
+}
+.cover .logo-badge{
+  width:64px;height:64px;border-radius:18px;background:var(--grad);
+  display:inline-grid;place-items:center;color:#fff;font-size:32px;font-weight:900;margin-bottom:14px;
+  box-shadow:0 10px 25px -5px rgba(0,132,255,.4);
+}
+.cover h1{font-size:32px;margin-bottom:8px}
+.cover .subtitle{font-size:16px;color:var(--muted);max-width:540px;margin:0 auto 20px}
+.cover .meta{font-size:12px;color:var(--faint);font-weight:600;line-height:1.7}
+
+.shot-container{
+  margin:12px 0 16px; border-radius:8px; border:1px solid var(--line2);
+  overflow:hidden; box-shadow:0 4px 14px rgba(0,0,0,.06); background:#0f172a;
+  page-break-inside:avoid;
+}
+.shot-container img{
+  width:100%; height:auto; display:block;
+}
+.shot-caption{
+  background:#f8fafc; padding:7px 12px; font-size:11px; color:var(--muted);
+  border-top:1px solid var(--line); font-weight:600; display:flex; justify-content:space-between;
+}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:8px; padding:12px;
+  page-break-inside:avoid;
+}
+.card h4{font-size:13.5px;font-weight:750;margin-bottom:4px;color:#0f172a}
+.card p{font-size:12px;margin:0;color:var(--muted)}
+
+.badge{
+  display:inline-block; padding:2px 7px; border-radius:5px; font-size:11px;
+  font-weight:700; background:var(--acc-soft); color:var(--acc2); margin-right:4px;
+}
+.badge-ok{background:#dcfce7;color:var(--ok)}
+.badge-warn{background:#fef3c7;color:var(--warn)}
+.badge-err{background:#fee2e2;color:var(--err)}
+
+.callout{
+  background:#eff6ff; border-left:4px solid var(--acc); padding:10px 14px;
+  border-radius:0 8px 8px 0; margin:12px 0; font-size:12px; page-break-inside:avoid;
+}
+.callout strong{color:#1e40af}
+
+.table{width:100%;border-collapse:collapse;margin:12px 0;font-size:11.5px}
+.table th,.table td{border:1px solid var(--line);padding:7px 9px;text-align:left}
+.table th{background:#f1f5f9;font-weight:700;color:#0f172a}
+
+.page-break{page-break-before:always}
+</style>
+</head>
+<body>
+
+<!-- PORTADA -->
+<div class="cover">
+  <div class="logo-badge">K</div>
+  <h1>Kyvorix CRM</h1>
+  <div class="subtitle">Manual de Usuario &amp; Guía de Uso Diario</div>
+  <p style="max-width:560px;margin:0 auto 20px;font-size:13px;color:var(--muted)">
+    Guía práctica y visual para asesores comerciales: cómo iniciar sesión, gestionar préstamos, consultar clientes y atender conversaciones de WhatsApp con asistencia de Inteligencia Artificial.
+  </p>
+  <div class="meta">
+    <strong>Enlace de Acceso:</strong> https://cmr-phi.vercel.app/<br>
+    <strong>Perfil de Usuario:</strong> Asesores de Ventas y Atención al Cliente<br>
+    <strong>Versión del Manual:</strong> 2.0
+  </div>
+</div>
+
+<!-- CAPÍTULO 1: CÓMO ENTRAR -->
+<h2>1. Cómo Iniciar Sesión en el CRM</h2>
+<p>Para ingresar al sistema desde tu computadora o tablet:</p>
+
+<div class="shot-container">
+  <img src="assets/01_login.png" alt="Pantalla de Inicio de Sesión">
+  <div class="shot-caption">
+    <span>Figura 1 — Pantalla para ingresar al sistema</span>
+    <span>Paso 1</span>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h4>Paso a Paso para Ingresar</h4>
+    <p>
+      1. Abre tu navegador e ingresa a <strong>https://cmr-phi.vercel.app/</strong>.<br>
+      2. Escribe tu correo electrónico corporativo asignado.<br>
+      3. Escribe tu contraseña personal.<br>
+      4. Haz clic en el botón verde <strong>Ingresar</strong>.
+    </p>
+  </div>
+  <div class="card">
+    <h4>Consejo de Seguridad</h4>
+    <p>
+      No compartas tu contraseña con nadie. Al terminar tu turno laboral, cierra sesión haciendo clic en el ícono de usuario ubicado en la esquina superior derecha de la pantalla.
+    </p>
+  </div>
+</div>
+
+<!-- CAPÍTULO 2: DASHBOARD -->
+<div class="page-break"></div>
+<h2>2. Pestaña: Dashboard (Panel de Control)</h2>
+<p>Al ingresar verás el <strong>Dashboard</strong>. Es tu pantalla de bienvenida donde puedes ver qué está pasando hoy en el CRM.</p>
+
+<div class="shot-container">
+  <img src="assets/02_dashboard.png" alt="Panel de Control">
+  <div class="shot-caption">
+    <span>Figura 2 — Panel de Control y Bandeja de Acción Rápida</span>
+    <span>Menú superior: Dashboard</span>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h4>Resumen del Día (Tarjetas Superiores)</h4>
+    <p>
+      • <strong>Total Conversaciones:</strong> Cuántos clientes están escribiendo a la línea.<br>
+      • <strong>Total Leads:</strong> Cuántas oportunidades o solicitudes de préstamo están activas.<br>
+      • <strong>Automatización Bot:</strong> Porcentaje de consultas atendidas por la IA.
+    </p>
+  </div>
+  <div class="card">
+    <h4>Bandeja de Acción Rápida (Lado Derecho)</h4>
+    <p>
+      Muestra los últimos mensajes que han llegado de los clientes. Si ves un mensaje urgente, haz clic directamente en el botón <strong>RESPONDER</strong> para abrir ese chat y atenderlo de inmediato.
+    </p>
+  </div>
+</div>
+
+<!-- CAPÍTULO 3: PRESTAMOS -->
+<div class="page-break"></div>
+<h2>3. Pestaña: Préstamos (Seguimiento de Solicitudes)</h2>
+<p>Haz clic en <strong>Préstamos</strong> en el menú superior para ver y administrar las solicitudes de dinero de los clientes.</p>
+
+<div class="shot-container">
+  <img src="assets/03_prestamos.png" alt="Gestión de Préstamos">
+  <div class="shot-caption">
+    <span>Figura 3 — Lista de préstamos y avance de etapas</span>
+    <span>Menú superior: Préstamos</span>
+  </div>
+</div>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Función</th>
+      <th>¿Para qué sirve?</th>
+      <th>¿Cómo se usa?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Filtros por Etapa</strong></td>
+      <td>Ver solo los clientes en un estado específico.</td>
+      <td>Haz clic en los botones superiores: <em>Todos</em>, <em>En Proceso</em> o <em>Préstamo Cerrado</em>.</td>
+    </tr>
+    <tr>
+      <td><strong>Cambiar Etapa</strong></td>
+      <td>Mover al cliente en el proceso de crédito.</td>
+      <td>Usa el menú desplegable en la columna <em>ETAPA</em> o presiona el botón gris de la derecha (ej. <em>&gt; Préstamo Programado</em>).</td>
+    </tr>
+    <tr>
+      <td><strong>Exportar Excel</strong></td>
+      <td>Descargar un reporte de todos los préstamos.</td>
+      <td>Haz clic en el botón superior derecho <strong>Exportar Excel</strong> para guardar la lista en tu computadora.</td>
+    </tr>
+    <tr>
+      <td><strong>+ Nuevo Prospecto</strong></td>
+      <td>Registrar un préstamo manualmente.</td>
+      <td>Presiona el botón azul para agregar un cliente que llamó por teléfono o vino a la oficina.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- CAPÍTULO 4: CLIENTES -->
+<div class="page-break"></div>
+<h2>4. Pestaña: Clientes (Directorio y Búsqueda)</h2>
+<p>Haz clic en <strong>Clientes</strong> en el menú superior para consultar la libreta de contactos de la empresa.</p>
+
+<div class="shot-container">
+  <img src="assets/04_clientes.png" alt="Directorio de Clientes">
+  <div class="shot-caption">
+    <span>Figura 4 — Directorio telefónico de clientes</span>
+    <span>Menú superior: Clientes</span>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h4>¿Cómo buscar un cliente?</h4>
+    <p>
+      En la esquina superior derecha encontrarás el campo <strong>"Buscar por nombre o teléfono..."</strong>. Solo escribe las primeras letras del nombre o los números del teléfono y la lista se filtrará al instante.
+    </p>
+  </div>
+  <div class="card">
+    <h4>Descargar la Cartera en Excel</h4>
+    <p>
+      Si tu supervisor te pide la lista de clientes, haz clic en el botón <strong>Exportar Excel</strong>. El sistema descargará un archivo <code>.xlsx</code> listo para abrir con todas las filas organizadas.
+    </p>
+  </div>
+</div>
+
+<!-- CAPÍTULO 5: CONVERSACIONES -->
+<div class="page-break"></div>
+<h2>5. Pestaña: Conversaciones (Atención en WhatsApp)</h2>
+<p>Haz clic en <strong>Conversaciones</strong> en el menú superior para hablar en vivo con los clientes que escriben a WhatsApp.</p>
+
+<div class="shot-container">
+  <img src="assets/06_conversacion_activa.png" alt="Pantalla de Chat Activo">
+  <div class="shot-caption">
+    <span>Figura 5 — Pantalla de atención al cliente y herramientas laterales</span>
+    <span>Menú superior: Conversaciones</span>
+  </div>
+</div>
+
+<div class="callout">
+  <strong>¿Cómo pausar la Inteligencia Artificial para responder tú mismo?</strong>
+  <br>• Si el cliente tiene una duda compleja o pide hablar con una persona, verás la barra azul: <em>"La IA está respondiendo automáticamente"</em>.
+  <br>• Haz clic en <strong>"Responder manualmente"</strong>. La IA se silenciará y podrás escribir en la caja inferior para responderle tú directamente.
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h4>Convertir en Prospecto (Botón Azul)</h4>
+    <p>
+      Si el cliente te dice por WhatsApp que necesita un préstamo, haz clic en el botón azul <strong>"Convertir en Prospecto"</strong> en el panel derecho. Se abrirá una pequeña ventana para que coloques cuánto dinero necesita y se enviará automáticamente a la pestaña de <em>Préstamos</em>.
+    </p>
+  </div>
+  <div class="card">
+    <h4>Eliminar Conversación (Botón Rojo)</h4>
+    <p>
+      Si recibiste un mensaje equivocado o spam y necesitas borrarlo, haz clic en <strong>"Eliminar conversación"</strong>. Por seguridad, el sistema <strong>te pedirá que escribas por qué lo estás borrando</strong> (ej. <em>"número equivocado"</em>). Una vez escrito, se activará el botón para confirmar.
+    </p>
+  </div>
+</div>
+
+<div class="callout" style="margin-top:20px">
+  <strong>💡 Tip de Trabajo Diario:</strong>
+  <br>Los mensajes que tú escribas en el CRM le llegan al WhatsApp del cliente al mismo segundo. No necesitas tener abierto WhatsApp Web en tu computadora; todo tu trabajo se realiza desde Kyvorix.
+</div>
+
+</body>
+</html>
